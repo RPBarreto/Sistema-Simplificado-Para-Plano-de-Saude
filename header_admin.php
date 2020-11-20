@@ -57,7 +57,7 @@
             <a class="nav-link" href="register_md.php" id="nav-link">Cadastrar médico</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" id="nav-link">Cadastrar laboratório</a>
+            <a class="nav-link" href="register_lab.php#" id="nav-link">Cadastrar laboratório</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#" id="nav-link">Cadastrar paciente</a>

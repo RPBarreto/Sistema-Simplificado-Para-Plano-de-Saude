@@ -93,7 +93,7 @@
     <div class="container">
   <div class="py-5 text-center">
     <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-    <h2>Cadastrar médico</h2>
+    <h2>Cadastrar laboratório</h2>
   </div>
     <div class="py-5 text-center">
       <form class="needs-validation" novalidate>
@@ -106,10 +106,10 @@
             </div>
           </div>
           <div class="col-md-6 mb-3">
-            <label for="lastName">Sobrenome</label>
-            <input type="text" class="form-control" id="lastName" placeholder="Sobrenome" value="" required>
+            <label for="cnpj">CNPJ</label>
+            <input type="number" class="form-control" id="cnpj" placeholder="Cnpj" value="" required>
             <div class="invalid-feedback">
-              Insira um sobrenome válido.
+              Insira um cnpj válido.
             </div>
           </div>
         </div>
@@ -131,25 +131,18 @@
         </div>
 
         <div class="row">
-          <div class="col-md-5 mb-3">
+          <div class="col-md-6 mb-3">
             <label for="phone">Telefone</label>
             <input type="tel" class="form-control" id="phone" placeholder="Telefone" required>
             <div class="invalid-feedback">
               Insira um número de telefone válido.
             </div>
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="col-md-6 mb-3">
             <label for="expertise">Especialidade</label>
               <input type="text" class="form-control" id="expertise" placeholder="Especialidade" required>
               <div class="invalid-feedback">
                 Insira uma especialidade.
-              </div>
-          </div>
-          <div class="col-md-3 mb-3">
-          <label for="crm">CRM</label>
-              <input type="number" class="form-control" id="crm" min="0" placeholder="" required>
-              <div class="invalid-feedback">
-                Insira um CRM válido.
               </div>
           </div>
         </div>
