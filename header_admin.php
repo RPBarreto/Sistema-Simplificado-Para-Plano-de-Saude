@@ -60,7 +60,7 @@
             <a class="nav-link" href="register_lab.php#" id="nav-link">Cadastrar laboratório</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" id="nav-link">Cadastrar paciente</a>
+            <a class="nav-link" href="register_pac.php#" id="nav-link">Cadastrar paciente</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="index.html" id="nav-link"><b>Logout</b></a>
