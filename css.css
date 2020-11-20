@@ -1,0 +1,16 @@
+body {
+  padding-bottom: 20px;
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+a#nav-link {
+  font-size: 24px;
+}
+
+a#greeting {
+  font-size: 32px;
+  font-weight: bold;
+}
