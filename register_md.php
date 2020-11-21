@@ -96,18 +96,18 @@
     <h2>Cadastrar médico</h2>
   </div>
     <div class="py-5 text-center">
-      <form class="needs-validation" novalidate>
+      <form class="needs-validation" novalidate  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="firstName">Nome</label>
-            <input type="text" class="form-control" id="firstName" placeholder="Nome" value="" required>
+            <input type="text" class="form-control" id="firstName" name="firstname" placeholder="Nome" value="" required>
             <div class="invalid-feedback">
               Insira um nome válido.
             </div>
           </div>
           <div class="col-md-6 mb-3">
             <label for="lastName">Sobrenome</label>
-            <input type="text" class="form-control" id="lastName" placeholder="Sobrenome" value="" required>
+            <input type="text" class="form-control" id="lastName" name="lastname" placeholder="Sobrenome" value="" required>
             <div class="invalid-feedback">
               Insira um sobrenome válido.
             </div>
@@ -116,7 +116,7 @@
 
         <div class="mb-3">
           <label for="email">E-mail</label>
-          <input type="email" class="form-control" id="email" placeholder="E-mail" required>
+          <input type="email" class="form-control" id="email" name="email" placeholder="E-mail" required>
           <div class="invalid-feedback">
             Insira um endereço de e-mail válido.
           </div>
@@ -124,7 +124,7 @@
 
         <div class="mb-3">
           <label for="address">Endereço</label>
-          <input type="text" class="form-control" id="address" placeholder="Endereço" required>
+          <input type="text" class="form-control" id="address" name="address" placeholder="Endereço" required>
           <div class="invalid-feedback">
             Insira um endereço.
           </div>
@@ -133,21 +133,21 @@
         <div class="row">
           <div class="col-md-5 mb-3">
             <label for="phone">Telefone</label>
-            <input type="tel" class="form-control" id="phone" placeholder="Telefone" required>
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Telefone" required>
             <div class="invalid-feedback">
               Insira um número de telefone válido.
             </div>
           </div>
           <div class="col-md-4 mb-3">
             <label for="expertise">Especialidade</label>
-              <input type="text" class="form-control" id="expertise" placeholder="Especialidade" required>
+              <input type="text" class="form-control" id="expertise" name="expertise" placeholder="Especialidade" required>
               <div class="invalid-feedback">
                 Insira uma especialidade.
               </div>
           </div>
           <div class="col-md-3 mb-3">
           <label for="crm">CRM</label>
-              <input type="number" class="form-control" id="crm" min="0" placeholder="" required>
+              <input type="number" class="form-control" id="crm" name="crm" min="0" placeholder="" required>
               <div class="invalid-feedback">
                 Insira um CRM válido.
               </div>
@@ -162,7 +162,33 @@
   </div>
 
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
       <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="assets/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="form-validation.js"></script></body>
+        <script src="form-validation.js"></script>
+      
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  echo "<h2>Your Input:</h2>";
+  echo $_POST["firstname"];
+  echo "<br>";
+  echo $_POST["lastname"];
+  echo "<br>";
+  echo $_POST["email"];
+  echo "<br>";
+  echo $_POST["address"];
+  echo "<br>";
+  echo $_POST["phone"];
+  echo "<br>";
+  echo $_POST["expertise"];
+  echo "<br>";
+  echo $_POST["crm"];
+  echo "<br>";
+  $xml = simplexml_load_file("medicos.xml");
+  $node = $xml->addChild("medico");
+  $node->addChild("Nome",$_POST["firstname"].$_POST["lastname"]);
+  $s = simplexml_import_dom($xml);
+  $s->saveXML('medicos.xml');
+}
+?>
+      </body>
 </html>
