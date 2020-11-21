@@ -63,7 +63,7 @@
             <a class="nav-link" href="register_pac.php#" id="nav-link">Cadastrar paciente</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="index.html" id="nav-link"><b>Logout</b></a>
+            <a class="nav-link" href="index.php" id="nav-link"><b>Logout</b></a>
           </li>
         </ul>
       </div>
