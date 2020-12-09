@@ -49,7 +49,7 @@
   <body class="bg-light">
     <?php 
       $user = "";
-
+      
       if (!empty($_POST["user"])) {
         $user = test_input($_POST["user"]);
       
@@ -94,6 +94,9 @@
   <div class="py-5 text-center">
     <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
     <h2>Cadastrar médico</h2>
+  </div>
+  <div class="alert" role="alert" style="display:none;">
+  E-mail ou CRM já estão em uso
   </div>
     <div class="py-5 text-center">
       <form class="needs-validation" novalidate  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
@@ -167,7 +170,15 @@
         <script src="form-validation.js"></script>
       
 <?php
+  function console_log( $data ){
+    echo '<script>';
+    echo 'console.log('. json_encode( $data ) .')';
+    echo '</script>';
+  }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $exists = false;
+/*
   echo "<h2>Your Input:</h2>";
   echo $_POST["firstname"];
   echo "<br>";
@@ -182,12 +193,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   echo $_POST["expertise"];
   echo "<br>";
   echo $_POST["crm"];
-  echo "<br>";
+  echo "<br>"; */
+
+  libxml_use_internal_errors(true);
+
   $xml = simplexml_load_file("medicos.xml");
-  $node = $xml->addChild("medico");
-  $node->addChild("Nome",$_POST["firstname"].$_POST["lastname"]);
-  $s = simplexml_import_dom($xml);
-  $s->saveXML('medicos.xml');
+
+  if ($xml === false) {
+      echo ("Falha ao carregar o código XML: ");
+      
+      foreach(libxml_get_errors() as $error) {
+          echo ("<br>". $error->message);
+
+      }
+  
+  } else {
+      for ($i = 0; $i < sizeof($xml); $i++) {
+        console_log($xml->medico[$i]->email);
+
+        if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
+          //Nao esta aparecendo por algum motivo
+          echo '<style type="text/css">
+          .alert {
+              display: block;
+          }
+          </style>';
+          $exists = true;
+          break;
+
+        }
+
+      }
+
+  }
+
+  if (!$exists) {
+    $xml = simplexml_load_file("medicos.xml");
+    $node = $xml->addChild("medico");
+
+    $node->addChild("Name", $_POST["firstname"]);
+    $node->addChild("LastName", $_POST["lastname"]);
+    $node->addChild("Email", $_POST["email"]);
+    $node->addChild("Address", $_POST["address"]);
+    $node->addChild("Phone", $_POST["phone"]);
+    $node->addChild("Expertise", $_POST["expertise"]);
+    $node->addChild("CRM", $_POST["crm"]);
+
+    $s = simplexml_import_dom($xml);
+    $s->saveXML("medicos.xml");
+
+  }
+
 }
 ?>
       </body>
