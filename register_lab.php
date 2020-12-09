@@ -49,7 +49,7 @@
   <body class="bg-light">
     <?php 
       $user = "";
-
+      
       if (!empty($_POST["user"])) {
         $user = test_input($_POST["user"]);
       
@@ -81,6 +81,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="register_pac.php#" id="nav-link">Cadastrar paciente</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="list_md.php#" id="nav-link">Listar médicos</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="index.php" id="nav-link"><b>Logout</b></a>

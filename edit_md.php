@@ -49,6 +49,51 @@
   <body class="bg-light">
     <?php 
       $user = "";
+      $edit_id = "";
+      //$getcrm = $_GET["crm"];
+      
+      if (!empty($_GET["crm"])) {
+        $getcrm = $_GET["crm"];
+      
+      } else {
+        $getcrm = "";
+
+      }
+
+      //$md_crm = $_GET["crm"];
+
+      libxml_use_internal_errors(true);
+
+      $xml = simplexml_load_file("medicos.xml");
+    
+      if ($xml === false) {
+          echo ("Falha ao carregar o código XML: ");
+          
+          foreach(libxml_get_errors() as $error) {
+              echo ("<br>". $error->message);
+    
+          }
+      
+      } else {
+          for ($i = 0; $i < sizeof($xml); $i++) {
+            
+            if ($getcrm == $xml->medico[$i]->CRM) {
+              $name = $xml->medico[$i]->Name;
+              $last_name = $xml->medico[$i]->LastName;
+              $email = $xml->medico[$i]->Email;
+              $address = $xml->medico[$i]->Address;
+              $phone = $xml->medico[$i]->Phone;
+              $expertise = $xml->medico[$i]->Expertise;
+              $crm = $xml->medico[$i]->CRM;
+              $edit_id = $i;
+
+
+            }
+    
+          }
+    
+      }
+
       
       if (!empty($_POST["user"])) {
         $user = test_input($_POST["user"]);
@@ -106,14 +151,14 @@
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="firstName">Nome</label>
-            <input type="text" class="form-control" id="firstName" name="firstname" placeholder="Nome" value="" required>
+            <input type="text" class="form-control" id="firstName" name="firstname" placeholder="Nome" value="<?php echo ($name);?>" required>
             <div class="invalid-feedback">
               Insira um nome válido.
             </div>
           </div>
           <div class="col-md-6 mb-3">
             <label for="lastName">Sobrenome</label>
-            <input type="text" class="form-control" id="lastName" name="lastname" placeholder="Sobrenome" value="" required>
+            <input type="text" class="form-control" id="lastName" name="lastname" placeholder="Sobrenome" value="<?php echo ($last_name);?>" required>
             <div class="invalid-feedback">
               Insira um sobrenome válido.
             </div>
@@ -122,7 +167,7 @@
 
         <div class="mb-3">
           <label for="email">E-mail</label>
-          <input type="email" class="form-control" id="email" name="email" placeholder="E-mail" required>
+          <input type="email" class="form-control" id="email" name="email" placeholder="E-mail" value="<?php echo ($email);?>" required>
           <div class="invalid-feedback">
             Insira um endereço de e-mail válido.
           </div>
@@ -130,7 +175,7 @@
 
         <div class="mb-3">
           <label for="address">Endereço</label>
-          <input type="text" class="form-control" id="address" name="address" placeholder="Endereço" required>
+          <input type="text" class="form-control" id="address" name="address" placeholder="Endereço" value="<?php echo ($address);?>" required>
           <div class="invalid-feedback">
             Insira um endereço.
           </div>
@@ -139,21 +184,21 @@
         <div class="row">
           <div class="col-md-5 mb-3">
             <label for="phone">Telefone</label>
-            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Telefone" required>
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Telefone" value="<?php echo ($phone);?>" required>
             <div class="invalid-feedback">
               Insira um número de telefone válido.
             </div>
           </div>
           <div class="col-md-4 mb-3">
             <label for="expertise">Especialidade</label>
-              <input type="text" class="form-control" id="expertise" name="expertise" placeholder="Especialidade" required>
+              <input type="text" class="form-control" id="expertise" name="expertise" placeholder="Especialidade" value="<?php echo ($expertise);?>" required>
               <div class="invalid-feedback">
                 Insira uma especialidade.
               </div>
           </div>
           <div class="col-md-3 mb-3">
           <label for="crm">CRM</label>
-              <input type="number" class="form-control" id="crm" name="crm" min="0" placeholder="" required>
+              <input type="number" class="form-control" id="crm" name="crm" min="0" placeholder="" value="<?php echo ($crm);?>" required>
               <div class="invalid-feedback">
                 Insira um CRM válido.
               </div>
@@ -162,7 +207,7 @@
 
         <hr class="mb-4">
 
-        <button class="btn btn-primary btn-lg btn-block" type="submit">Cadastrar</button>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Editar</button>
       </form>
     </div>
   </div>
@@ -180,27 +225,13 @@
   }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $exists = false;
-/*
-  echo "<h2>Your Input:</h2>";
-  echo $_POST["firstname"];
-  echo "<br>";
-  echo $_POST["lastname"];
-  echo "<br>";
-  echo $_POST["email"];
-  echo "<br>";
-  echo $_POST["address"];
-  echo "<br>";
-  echo $_POST["phone"];
-  echo "<br>";
-  echo $_POST["expertise"];
-  echo "<br>";
-  echo $_POST["crm"];
-  echo "<br>"; */
-
   libxml_use_internal_errors(true);
 
   $xml = simplexml_load_file("medicos.xml");
+
+  //Nao esta recuperando o medico pelo id
+  $dom = dom_import_simplexml($xml->medico[$edit_id]);
+  $dom->parentNode->removeChild($dom);
 
   if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
@@ -215,16 +246,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         console_log($xml->medico[$i]->email);
 
         if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
-          //Nao esta aparecendo por algum motivo
-          echo '<style type="text/css">
-          .alert {
-              display: block;
-          }
-          </style>';
-          $exists = true;
-          break;
+            //Nao esta aparecendo por algum motivo
+            echo '<style type="text/css">
+            .alert {
+                display: block;
+            }
+            </style>';
+            $exists = true;
+            break;
 
-        }
+          }
 
       }
 
