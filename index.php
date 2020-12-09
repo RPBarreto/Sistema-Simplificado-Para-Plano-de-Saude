@@ -49,7 +49,7 @@
   </head>
 
   <body class="bg-light">
-    <form class="needs-validation" novalidate method="post" action="header_admin.php">
+    <form class="needs-validation" novalidate method="post" action="home_admin.php">
       <div class="text-center mb-4">
         <img class="mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal"></h1>
