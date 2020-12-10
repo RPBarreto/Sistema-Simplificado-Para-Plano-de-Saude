@@ -86,6 +86,9 @@
             <a class="nav-link" href="list_md.php#" id="nav-link">Listar médicos</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="list_pac.php#" id="nav-link">Listar pacientes</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="index.php" id="nav-link"><b>Logout</b></a>
           </li>
         </ul>
