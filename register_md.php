@@ -1,11 +1,30 @@
 <?php include "./header_admin.php" ?>
 
     <div class="container">
+      <div class="modal" tabindex="-1" role="dialog" id="Modal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Erro</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>E-mail ou CRM já estão em uso</p>
+          </div>
+          <div class="modal-footer">
+            <a type="button" href="" class="btn btn-primary">Fechar</a>
+          </div>
+        </div>
+      </div>
+    </div>   
+
   <div class="py-5 text-center">
     <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
     <h2>Cadastrar médico</h2>
   </div>
-  <div class="alert" role="alert" style="display:none;">
+  <div class="alert" role="alert" id="Alert" style="display:none;">
   E-mail ou CRM já estão em uso
   </div>
     <div class="py-5 text-center">
@@ -88,22 +107,6 @@
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $exists = false;
-/*
-  echo "<h2>Your Input:</h2>";
-  echo $_POST["firstname"];
-  echo "<br>";
-  echo $_POST["lastname"];
-  echo "<br>";
-  echo $_POST["email"];
-  echo "<br>";
-  echo $_POST["address"];
-  echo "<br>";
-  echo $_POST["phone"];
-  echo "<br>";
-  echo $_POST["expertise"];
-  echo "<br>";
-  echo $_POST["crm"];
-  echo "<br>"; */
 
   libxml_use_internal_errors(true);
 
@@ -122,12 +125,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         console_log($xml->medico[$i]->email);
 
         if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
-          //Nao esta aparecendo por algum motivo
-          echo '<style type="text/css">
-          .alert {
-              display: block;
-          }
-          </style>';
+          echo "<script type='text/javascript'>
+          $(document).ready(function(){
+            $('#Modal').modal('show');
+          });
+          </script>";
           $exists = true;
           break;
 

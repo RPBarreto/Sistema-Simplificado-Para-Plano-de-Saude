@@ -1,18 +1,13 @@
 <?php include "./header_admin.php" ?>
 
 <?php
-$edit_id = "";
-//$getcrm = $_GET["crm"];
-
 if (!empty($_GET["crm"])) {
   $getcrm = $_GET["crm"];
 
 } else {
-  $getcrm = "";
+  $getcrm = $_POST["getcrm"];
 
 }
-
-//$md_crm = $_GET["crm"];
 
 libxml_use_internal_errors(true);
 
@@ -26,6 +21,15 @@ if ($xml === false) {
 
     }
 
+} else if (!empty($_POST["getcrm"])) {
+  $name = $_POST["firstname"];
+  $last_name = $_POST["lastname"];
+  $email = $_POST["email"];
+  $address = $_POST["address"];
+  $phone = $_POST["phone"];
+  $expertise = $_POST["expertise"];
+  $crm = $_POST["crm"];
+
 } else {
     for ($i = 0; $i < sizeof($xml); $i++) {
       
@@ -37,8 +41,6 @@ if ($xml === false) {
         $phone = $xml->medico[$i]->Phone;
         $expertise = $xml->medico[$i]->Expertise;
         $crm = $xml->medico[$i]->CRM;
-        $edit_id = $i;
-
 
       }
 
@@ -51,10 +53,7 @@ if ($xml === false) {
     <div class="container">
   <div class="py-5 text-center">
     <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-    <h2>Cadastrar médico</h2>
-  </div>
-  <div class="alert" role="alert" style="display:none;">
-  E-mail ou CRM já estão em uso
+    <h2>Editar médico</h2>
   </div>
     <div class="py-5 text-center">
       <form class="needs-validation" novalidate  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
@@ -115,6 +114,8 @@ if ($xml === false) {
           </div>
         </div>
 
+        <input type="hidden" class="form-control" name="getcrm" value="<?php echo ($getcrm);?>" required>
+
         <hr class="mb-4">
 
         <button class="btn btn-primary btn-lg btn-block" type="submit">Editar</button>
@@ -126,7 +127,26 @@ if ($xml === false) {
       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
       <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="assets/dist/js/bootstrap.bundle.min.js"></script>
         <script src="form-validation.js"></script>
-      
+
+      <div class="modal" tabindex="-1" role="dialog" id="Modal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Erro</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>E-mail ou CRM já estão em uso</p>
+          </div>
+          <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>        
+
 <?php
   function console_log( $data ){
     echo '<script>';
@@ -135,13 +155,10 @@ if ($xml === false) {
   }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $exists = false;
   libxml_use_internal_errors(true);
 
   $xml = simplexml_load_file("medicos.xml");
-
-  //Nao esta recuperando o medico pelo id
-  $dom = dom_import_simplexml($xml->medico[$edit_id]);
-  $dom->parentNode->removeChild($dom);
 
   if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
@@ -156,36 +173,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         console_log($xml->medico[$i]->email);
 
         if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
-            //Nao esta aparecendo por algum motivo
-            echo '<style type="text/css">
-            .alert {
-                display: block;
-            }
-            </style>';
+          if (!($getcrm == $xml->medico[$i]->CRM)) {
+            echo "<script type='text/javascript'>
+            $(document).ready(function(){
+              $('#Modal').modal('show');
+            });
+            </script>";
+
             $exists = true;
             break;
-
+          
           }
+
+        }
 
       }
 
   }
 
   if (!$exists) {
+    
     $xml = simplexml_load_file("medicos.xml");
-    $node = $xml->addChild("medico");
 
-    $node->addChild("Name", $_POST["firstname"]);
-    $node->addChild("LastName", $_POST["lastname"]);
-    $node->addChild("Email", $_POST["email"]);
-    $node->addChild("Address", $_POST["address"]);
-    $node->addChild("Phone", $_POST["phone"]);
-    $node->addChild("Expertise", $_POST["expertise"]);
-    $node->addChild("CRM", $_POST["crm"]);
+    if ($xml === false) {
+      echo ("Falha ao carregar o código XML: ");
+      
+      foreach(libxml_get_errors() as $error) {
+          echo ("<br>". $error->message);
+
+      }
+
+    } else {
+        for ($i = 0; $i < sizeof($xml); $i++) {
+          
+          if ($getcrm == $xml->medico[$i]->CRM) {
+            $xml->medico[$i]->Name = $_POST["firstname"];
+            $xml->medico[$i]->LastName = $_POST["lastname"];
+            $xml->medico[$i]->Email = $_POST["email"];
+            $xml->medico[$i]->Address = $_POST["address"];
+            $xml->medico[$i]->Phone = $_POST["phone"];
+            $xml->medico[$i]->Expertise = $_POST["expertise"];
+            
+            if ($getcrm != $_POST["crm"]) {
+              $xml->medico[$i]->CRM = $_POST["crm"];
+              $getcrm = $_POST["crm"];
+
+            }
+
+          }
+
+        }
+
+    }
 
     $s = simplexml_import_dom($xml);
     $s->saveXML("medicos.xml");
-
+    
   }
 
 }
