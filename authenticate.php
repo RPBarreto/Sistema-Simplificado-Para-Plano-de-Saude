@@ -5,7 +5,8 @@
 
     libxml_use_internal_errors(true);
 
-    $xml = simplexml_load_file("admins.xml");
+    $xml = simplexml_load_file("users.xml");
+    
     
     if ($xml === false) {
         echo ("Falha ao carregar o código XML: ");
@@ -18,16 +19,41 @@
     } else {
 
         for ($i = 0; $i < sizeof($xml); $i++) {
-            
-            if ($xml->medico[$i]->Email == $user && $xml->admin[$i]->Pass == $pass) {
+            if ($xml->user[$i]->Email == $user && $xml->user[$i]->Pass == $pass) {
                 session_start();
                 
                 $_SESSION['user'] = $user;
                 $_SESSION['pass'] = $pass;
 
-                header("Location: home_admin.php");
-                $logged = true;
-                break;
+                if ($xml->user[$i]->Type == '1'){
+                    
+                    $_SESSION['type'] = 1;
+
+                    header("Location: home_admin.php");
+                    $logged = true;
+                    break;
+                }
+                if ($xml->user[$i]->Type == '2'){
+                    $_SESSION['type'] = 2;
+
+                    //header("Location: home_med.php");
+                    $logged = true;
+                    break;
+                }
+                if ($xml->user[$i]->Type == '3'){
+                    $_SESSION['type'] = 3;
+
+                    //header("Location: home_lab.php");
+                    $logged = true;
+                    break;
+                }
+                if ($xml->user[$i]->Type == '4'){
+                    $_SESSION['type'] = 4;
+
+                   // header("Location: home_pac.php");
+                    $logged = true;
+                    break;
+                } 
 
             }
     
