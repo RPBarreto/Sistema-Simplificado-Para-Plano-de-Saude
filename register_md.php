@@ -151,12 +151,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $node->addChild("Expertise", $_POST["expertise"]);
     $node->addChild("CRM", $_POST["crm"]);
 
-    //Senha
-    $node->addChild("Pass", $_POST["crm"]);
-
     $s = simplexml_import_dom($xml);
     $s->saveXML("medicos.xml");
 
+    $xml = simplexml_load_file("users.xml");
+    $node = $xml->addChild("user");
+    $node->addChild("Email", $_POST["email"]);
+    $node->addChild("Pass", $_POST["crm"]);
+    $node->addChild("Type", '2');
+    $s = simplexml_import_dom($xml);
+    $s->saveXML("users.xml");
   }
 
 }

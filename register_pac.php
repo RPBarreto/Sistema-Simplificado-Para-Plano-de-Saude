@@ -131,12 +131,18 @@
       $node->addChild("Address", $_POST["address"]);
       $node->addChild("Phone", $_POST["phone"]);
       $node->addChild("Genero", $_POST["genero"]);
-      //Senha
-      $node->addChild("Pass", $_POST["cpf"]);
+      
 
       $s = simplexml_import_dom($xml);
       $s->saveXML("pacientes.xml");
 
+      $xml = simplexml_load_file("users.xml");
+      $node = $xml->addChild("user");
+      $node->addChild("Email", $_POST["email"]);
+      $node->addChild("Pass", $_POST["cpf"]);
+      $node->addChild("Type", '4');
+      $s = simplexml_import_dom($xml);
+      $s->saveXML("users.xml");
     }
 
   }

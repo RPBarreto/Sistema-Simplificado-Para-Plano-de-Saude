@@ -122,11 +122,18 @@
       $node->addChild("Expertise", $_POST["expertise"]);
 
       //Senha
-      $node->addChild("Pass", $_POST["cnpj"]);
+     
 
       $s = simplexml_import_dom($xml);
       $s->saveXML("laboratorios.xml");
 
+      $xml = simplexml_load_file("users.xml");
+      $node = $xml->addChild("user");
+      $node->addChild("Email", $_POST["email"]);
+      $node->addChild("Pass", $_POST["cnpj"]);
+      $node->addChild("Type", '3');
+      $s = simplexml_import_dom($xml);
+      $s->saveXML("users.xml");
     }
 
   }
