@@ -1,17 +1,17 @@
 <?php include "./header_admin.php" ?>
 
 <?php
-if (!empty($_GET["crm"])) {
-  $getcrm = $_GET["crm"];
+if (!empty($_GET["cpf"])) {
+  $getcpf = $_GET["cpf"];
 
 } else {
-  $getcrm = $_POST["crm"];
+  $getcpf = $_POST["cpf"];
 
 }
 
 libxml_use_internal_errors(true);
 
-$xml = simplexml_load_file("medicos.xml");
+$xml = simplexml_load_file("pacientes.xml");
 
 if ($xml === false) {
     echo ("Falha ao carregar o código XML: ");
@@ -21,26 +21,26 @@ if ($xml === false) {
 
     }
 
-} else if (!empty($_POST["getcrm"])) {
+} else if (!empty($_POST["getcpf"])) {
   $name = $_POST["firstname"];
   $last_name = $_POST["lastname"];
   $email = $_POST["email"];
   $address = $_POST["address"];
   $phone = $_POST["phone"];
-  $expertise = $_POST["expertise"];
-  $crm = $_POST["crm"];
+  $cpf = $_POST["cpf"];
+  $genero = $_POST["genero"];
 
 } else {
     for ($i = 0; $i < sizeof($xml); $i++) {
       
-      if ($getcrm == $xml->medico[$i]->CRM) {
-        $name = $xml->medico[$i]->Name;
-        $last_name = $xml->medico[$i]->LastName;
-        $email = $xml->medico[$i]->Email;
-        $address = $xml->medico[$i]->Address;
-        $phone = $xml->medico[$i]->Phone;
-        $expertise = $xml->medico[$i]->Expertise;
-        $crm = $xml->medico[$i]->CRM;
+      if ($getcpf == $xml->paciente[$i]->CPF) {
+        $name = $xml->paciente[$i]->Name;
+        $last_name = $xml->paciente[$i]->LastName;
+        $email = $xml->paciente[$i]->Email;
+        $address = $xml->paciente[$i]->Address;
+        $phone = $xml->paciente[$i]->Phone;
+        $cpf = $xml->paciente[$i]->CPF;
+        $genero = $xml->paciente[$i]->Genero;
 
       }
 
@@ -53,7 +53,7 @@ if ($xml === false) {
     <div class="container">
   <div class="py-5 text-center">
     <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-    <h2>Editar médico</h2>
+    <h2>Editar paciente</h2>
   </div>
     <div class="py-5 text-center">
       <form class="needs-validation" novalidate  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
@@ -91,30 +91,32 @@ if ($xml === false) {
         </div>
 
         <div class="row">
-          <div class="col-md-5 mb-3">
+          <div class="col-md-4 mb-2">
             <label for="phone">Telefone</label>
             <input type="tel" class="form-control" id="phone" name="phone" placeholder="Telefone" value="<?php echo ($phone);?>" required>
             <div class="invalid-feedback">
               Insira um número de telefone válido.
             </div>
           </div>
-          <div class="col-md-4 mb-3">
-            <label for="expertise">Especialidade</label>
-              <input type="text" class="form-control" id="expertise" name="expertise" placeholder="Especialidade" value="<?php echo ($expertise);?>" required>
+          <div class="col-md-4 mb-2">
+            <label for="cpf">CPF</label>
+              <input type="number" class="form-control" id="cpf" name="cpf" placeholder="Cpf" value="<?php echo ($cpf);?>" required>
               <div class="invalid-feedback">
                 Insira uma especialidade.
               </div>
           </div>
-          <div class="col-md-3 mb-3">
-          <label for="crm">CRM</label>
-              <input type="number" class="form-control" id="crm" name="crm" min="0" placeholder="" value="<?php echo ($crm);?>" required>
+          <div class="col-md-4 mb-2">
+            <label for="Genero">Genero</label>
+              <select id="genero" class="form-control" name="genero" value="<?php echo ($genero);?>">
+                <option value="feminino">Feminino</option>
+                <option value="masculino">Masculino</option>
+                <option value="outro">Outro</option>
+              </select>
               <div class="invalid-feedback">
-                Insira um CRM válido.
+                Escolha um genero.
               </div>
           </div>
         </div>
-
-        <input type="hidden" class="form-control" name="getcrm" value="<?php echo ($getcrm);?>" required>
 
         <hr class="mb-4">
 
@@ -138,7 +140,7 @@ if ($xml === false) {
             </button>
           </div>
           <div class="modal-body">
-            <p>E-mail ou CRM já estão em uso</p>
+            <p>E-mail ou CPF já estão em uso</p>
           </div>
           <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
@@ -158,7 +160,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $exists = false;
   libxml_use_internal_errors(true);
 
-  $xml = simplexml_load_file("medicos.xml");
+  $xml = simplexml_load_file("pacientes.xml");
 
   if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
@@ -170,10 +172,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   
   } else {
       for ($i = 0; $i < sizeof($xml); $i++) {
-        console_log($xml->medico[$i]->email);
+        console_log($xml->paciente[$i]->email);
 
-        if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
-          if (!($getcrm == $xml->medico[$i]->CRM)) {
+        if ($_POST["cpf"] == $xml->paciente[$i]->CPF || $_POST["email"] == $xml->paciente[$i]->Email) {
+          if (!($getcpf == $xml->paciente[$i]->CPF)) {
             echo "<script type='text/javascript'>
             $(document).ready(function(){
               $('#Modal').modal('show');
@@ -193,7 +195,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   if (!$exists) {
     
-    $xml = simplexml_load_file("medicos.xml");
+    $xml = simplexml_load_file("pacientes.xml");
 
     if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
@@ -206,17 +208,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         for ($i = 0; $i < sizeof($xml); $i++) {
           
-          if ($getcrm == $xml->medico[$i]->CRM) {
-            $xml->medico[$i]->Name = $_POST["firstname"];
-            $xml->medico[$i]->LastName = $_POST["lastname"];
-            $xml->medico[$i]->Email = $_POST["email"];
-            $xml->medico[$i]->Address = $_POST["address"];
-            $xml->medico[$i]->Phone = $_POST["phone"];
-            $xml->medico[$i]->Expertise = $_POST["expertise"];
+          if ($getcpf == $xml->paciente[$i]->CPF) {
+            $xml->paciente[$i]->Name = $_POST["firstname"];
+            $xml->paciente[$i]->LastName = $_POST["lastname"];
+            $xml->paciente[$i]->Email = $_POST["email"];
+            $xml->paciente[$i]->Address = $_POST["address"];
+            $xml->paciente[$i]->Phone = $_POST["phone"];
+            $xml->paciente[$i]->Genero = $_POST["genero"];
             
-            if ($getcrm != $_POST["crm"]) {
-              $xml->medico[$i]->CRM = $_POST["crm"];
-              $getcrm = $_POST["crm"];
+            if ($getcpf != $_POST["cpf"]) {
+              $xml->paciente[$i]->CPF = $_POST["cpf"];
+              $getcpf = $_POST["cpf"];
 
             }
 
@@ -227,7 +229,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $s = simplexml_import_dom($xml);
-    $s->saveXML("medicos.xml");
+    $s->saveXML("pacientes.xml");
     
   }
 

@@ -31,11 +31,11 @@
                       <td>".$xml->paciente[$i]->Email."</td>
                       <td>".$xml->paciente[$i]->Address."</td>
                       <td>".$xml->paciente[$i]->Phone."</td>
-                      <td>".$xml->paciente[$i]->Expertise."</td>
-                      <td>".$xml->paciente[$i]->CRM."</td>
+                      <td>".$xml->paciente[$i]->CPF."</td>
+                      <td>".$xml->paciente[$i]->Genero."</td>
                       <td>
-                        <form action='edit_md.php' method='GET'>
-                          <input class='form-control' name='crm' type='hidden' value='".$xml->paciente[$i]->CRM."' />
+                        <form action='edit_pac.php' method='GET'>
+                          <input class='form-control' name='cpf' type='hidden' value='".$xml->paciente[$i]->CPF."' />
                           <input class='form-control' name='email' type='hidden' value='".$xml->paciente[$i]->Email."' />
                           <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
                         </form>

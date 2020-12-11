@@ -3,7 +3,7 @@
     <div class="container">
         <div class="py-5 text-center">
             <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-            <h2>Lista de médicos</h2>
+            <h2>Lista de Laboratorios</h2>
         </div>
         <table class="table table-striped">
         <thead>
@@ -26,15 +26,14 @@
               echo "<tr>
                       <th scope='row'>".($i + 1)."</th>
                       <td>".$xml->laboratorio[$i]->Name."</td>
-                      <td>".$xml->laboratorio[$i]->LastName."</td>
+                      <td>".$xml->laboratorio[$i]->CNPJ."</td>
                       <td>".$xml->laboratorio[$i]->Email."</td>
                       <td>".$xml->laboratorio[$i]->Address."</td>
                       <td>".$xml->laboratorio[$i]->Phone."</td>
                       <td>".$xml->laboratorio[$i]->Expertise."</td>
-                      <td>".$xml->laboratorio[$i]->CRM."</td>
                       <td>
-                        <form action='edit_md.php' method='GET'>
-                          <input class='form-control' name='crm' type='hidden' value='".$xml->laboratorio[$i]->CRM."' />
+                        <form action='edit_lab.php' method='GET'>
+                          <input class='form-control' name='cnpj' type='hidden' value='".$xml->laboratorio[$i]->CNPJ."' />
                           <input class='form-control' name='email' type='hidden' value='".$xml->laboratorio[$i]->Email."' />
                           <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
                         </form>
