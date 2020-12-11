@@ -48,13 +48,21 @@
 
   <body class="bg-light">
     <?php 
+      session_start();
       $user = "";
-      
-      if (!empty($_POST["user"])) {
-        $user = test_input($_POST["user"]);
-      
+
+      if (!isset($_SESSION["user"]) || !isset($_SESSION["pass"])) {
+        header("Location: index.php?error=access_denied");
+
+      } else {
+        $user = $_SESSION["user"];
+
       }
 
+      if(!empty($_POST["logout"])) { 
+        logout(); 
+      
+      }
 
       function test_input ($data) {
         $data = trim($data);
@@ -64,9 +72,20 @@
         return $data;
 
       }
+
+      function logout() {
+        session_unset();
+        //unset($_SESSION["user"]);
+        //unset($_SESSION["password"]);
+        
+        session_destroy();
+        header('Location: index.php');
+      }
+
+
     ?>
     <nav class="navbar navbar-light bg-light">
-      <a class="navbar-brand disabled" id="greeting"><?php if (!empty($_POST["user"])) echo ("Você está logado como Admin. Olá, ".$user); ?></a>
+      <a class="navbar-brand disabled" id="greeting"><?php echo ("Você está logado como Admin. Olá, ".$user); ?></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample01" aria-controls="navbarsExample01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -92,7 +111,10 @@
             <a class="nav-link" href="list_pac.php#" id="nav-link">Listar pacientes</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="index.php" id="nav-link"><b>Logout</b></a>
+            <form id="logoutForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
+              <input type="hidden" name="logout" value="error"/>
+              <a class="nav-link" href="#" id="nav-link" onclick="this.closest('form').submit(); return false;"><b>Logout</b></a>
+            </form>
           </li>
         </ul>
       </div>

@@ -151,6 +151,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $node->addChild("Expertise", $_POST["expertise"]);
     $node->addChild("CRM", $_POST["crm"]);
 
+    //Senha
+    $node->addChild("Pass", $_POST["crm"]);
+
     $s = simplexml_import_dom($xml);
     $s->saveXML("medicos.xml");
 

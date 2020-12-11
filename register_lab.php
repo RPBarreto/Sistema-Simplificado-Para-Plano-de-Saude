@@ -121,6 +121,9 @@
       $node->addChild("Phone", $_POST["phone"]);
       $node->addChild("Expertise", $_POST["expertise"]);
 
+      //Senha
+      $node->addChild("Pass", $_POST["cnpj"]);
+
       $s = simplexml_import_dom($xml);
       $s->saveXML("laboratorios.xml");
 

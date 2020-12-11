@@ -131,6 +131,8 @@
       $node->addChild("Address", $_POST["address"]);
       $node->addChild("Phone", $_POST["phone"]);
       $node->addChild("Genero", $_POST["genero"]);
+      //Senha
+      $node->addChild("Pass", $_POST["cpf"]);
 
       $s = simplexml_import_dom($xml);
       $s->saveXML("pacientes.xml");

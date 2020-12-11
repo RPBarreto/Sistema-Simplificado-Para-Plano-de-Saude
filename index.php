@@ -49,7 +49,8 @@
   </head>
 
   <body class="bg-light">
-    <form class="needs-validation" novalidate method="post" action="home_admin.php">
+
+    <form class="needs-validation" novalidate method="post" action="authenticate.php">
       <div class="text-center mb-4">
         <img class="mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal"></h1>
@@ -80,6 +81,47 @@
         <script src="form-validation.js"></script></body>
 </html>
 
+<?php 
+  $errorMessage = "";
+
+  if (!empty($_GET["error"])) {
+
+    if ($_GET["error"] == "invalid_user") {
+      echo ($_GET["error"]);
+      $errorMessage = "E-mail ou senha não foram encontrados";
+      
+    } else if ($_GET["error"] == "access_denied") {
+      $errorMessage = "Acesso negado";
+
+    }
+
+    echo "<script type='text/javascript'>
+    $(document).ready(function(){
+      $('#Modal').modal('show');
+    });
+    </script>";
+
+  }
+
+?>
+    <div class="modal" tabindex="-1" role="dialog" id="Modal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Erro</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p><?php echo ($errorMessage) ?></p>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+            </div>
+          </div>
+        </div>
+      </div>   
 <!--
 <!doctype html>
 <html>
