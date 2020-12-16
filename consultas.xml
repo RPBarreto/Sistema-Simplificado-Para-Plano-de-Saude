@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<medicos>
+<medico><Email>tas@g</Email><consulta><ID>0</ID><Pac>yue@g</Pac><Data>2020-12-23</Data><Presc>Receita</Presc><Notes>sei la</Notes></consulta></medico><medico><Email>tas@g</Email><consulta><ID>1</ID><Pac>ue@g</Pac><Data>2020-12-11</Data><Presc>receita2</Presc><Notes>adaa</Notes></consulta></medico></medicos>
