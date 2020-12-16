@@ -2,7 +2,7 @@
 <cadastro>
 <user>
 <Email>dad@g</Email>
-<Pass>123</Pass>
+<Pass>123455</Pass>
 <Type>1</Type>
 </user>
-</cadastro>
+<user><Email>tas@g</Email><Pass>123455</Pass><Type>2</Type></user></cadastro>

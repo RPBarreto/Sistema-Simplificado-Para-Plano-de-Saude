@@ -36,7 +36,7 @@
                 if ($xml->user[$i]->Type == '2'){
                     $_SESSION['type'] = 2;
 
-                    //header("Location: home_med.php");
+                    header("Location: home_md.php");
                     $logged = true;
                     break;
                 }

@@ -1,13 +1,7 @@
-<?php include "./header_admin.php" ?>
+<?php include "./header_md.php" ?>
 
 <?php
-if (!empty($_GET["crm"])) {
-  $getcrm = $_GET["crm"];
-
-} else {
-  $getcrm = $_POST["crm"];
-
-}
+$getemail = $_SESSION["user"];
 
 libxml_use_internal_errors(true);
 
@@ -21,7 +15,7 @@ if ($xml === false) {
 
     }
 
-} else if (!empty($_POST["getcrm"])) {
+} else if (!empty($_POST["getemail"])) {
   $name = $_POST["firstname"];
   $last_name = $_POST["lastname"];
   $email = $_POST["email"];
@@ -33,7 +27,7 @@ if ($xml === false) {
 } else {
     for ($i = 0; $i < sizeof($xml); $i++) {
       
-      if ($getcrm == $xml->medico[$i]->CRM) {
+      if ($getemail == $xml->medico[$i]->Email) {
         $name = $xml->medico[$i]->Name;
         $last_name = $xml->medico[$i]->LastName;
         $email = $xml->medico[$i]->Email;
@@ -83,6 +77,14 @@ if ($xml === false) {
         </div>
 
         <div class="mb-3">
+          <label for="email">Senha</label>
+          <input type="password" class="form-control" id="pass" name="pass" placeholder="Senha" required>
+          <div class="invalid-feedback">
+            Insira uma senha.
+          </div>
+        </div>
+
+        <div class="mb-3">
           <label for="address">Endereço</label>
           <input type="text" class="form-control" id="address" name="address" placeholder="Endereço" value="<?php echo ($address);?>" required>
           <div class="invalid-feedback">
@@ -114,7 +116,7 @@ if ($xml === false) {
           </div>
         </div>
 
-        <input type="hidden" class="form-control" name="getcrm" value="<?php echo ($getcrm);?>" required>
+        <input type="hidden" class="form-control" name="getemail" value="<?php echo ($getemail);?>" required>
 
         <hr class="mb-4">
 
@@ -172,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       for ($i = 0; $i < sizeof($xml); $i++) {
 
         if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
-          if (!($getcrm == $xml->medico[$i]->CRM)) {
+          if (!($getemail == $xml->medico[$i]->Email)) {
             echo "<script type='text/javascript'>
             $(document).ready(function(){
               $('#Modal').modal('show');
@@ -194,6 +196,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $xml = simplexml_load_file("medicos.xml");
 
+    $xml2 = simplexml_load_file("users.xml");
+
     if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
       
@@ -205,7 +209,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         for ($i = 0; $i < sizeof($xml); $i++) {
           
-          if ($getcrm == $xml->medico[$i]->CRM) {
+          if ($getemail == $xml->medico[$i]->Email) {
             $xml->medico[$i]->Name = $_POST["firstname"];
             $xml->medico[$i]->LastName = $_POST["lastname"];
             $xml->medico[$i]->Email = $_POST["email"];
@@ -213,9 +217,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $xml->medico[$i]->Phone = $_POST["phone"];
             $xml->medico[$i]->Expertise = $_POST["expertise"];
             
-            if ($getcrm != $_POST["crm"]) {
-              $xml->medico[$i]->CRM = $_POST["crm"];
-              $getcrm = $_POST["crm"];
+            if ($xml2 === false) {
+              echo ("Falha ao carregar o código XML: ");
+              
+              foreach(libxml_get_errors() as $error) {
+                  echo ("<br>". $error->message);
+        
+              }
+        
+            } else {
+
+              for ($j = 0; $j < sizeof($xml2); $j++) {
+                $xml2->user[$j]->Pass = $_POST["pass"];
+              
+              }
+            
+            }
+            
+            if ($getemail != $_POST["email"]) {
+              $xml->medico[$i]->Email = $_POST["email"];
+
+              if ($xml2 === false) {
+                echo ("Falha ao carregar o código XML: ");
+                
+                foreach(libxml_get_errors() as $error) {
+                    echo ("<br>". $error->message);
+          
+                }
+          
+              } else {
+
+                for ($j = 0; $j < sizeof($xml2); $j++) {
+
+                  if ($getemail == $xml2->user[$j]->Email) {
+                    $xml2->user[$j]->Email = $_POST["email"];
+
+                    session_unset();
+                
+                    session_destroy();
+                    
+                    break;
+
+                  }
+                  
+
+                }
+
+              }
+              $getemail = $_POST["email"];
+
+              if ($_POST["pass"] != $_SESSION["pass"]) {
+                session_unset();
+                
+                session_destroy();
+
+              }
 
             }
 
@@ -225,12 +281,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     }
 
-    //Precisa ser testado
+    //Resolve o problema de campos em branco na edição
     if (!empty($_POST["email"])) {
       $s = simplexml_import_dom($xml);
       $s->saveXML("medicos.xml");
-    
+
+      $sv = simplexml_import_dom($xml2);
+      $sv->saveXML("users.xml");
     }
+    
   }
 
 }
