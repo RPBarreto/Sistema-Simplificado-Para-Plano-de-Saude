@@ -70,11 +70,6 @@
         <script src="form-validation.js"></script>
 
     <?php
-    function console_log( $data ){
-      echo '<script>';
-      echo 'console.log('. json_encode( $data ) .')';
-      echo '</script>';
-    }
 
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $exists = false;

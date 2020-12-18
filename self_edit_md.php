@@ -216,41 +216,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $xml->medico[$i]->Address = $_POST["address"];
             $xml->medico[$i]->Phone = $_POST["phone"];
             $xml->medico[$i]->Expertise = $_POST["expertise"];
-            
-            if ($xml2 === false) {
-              echo ("Falha ao carregar o código XML: ");
-              
-              foreach(libxml_get_errors() as $error) {
-                  echo ("<br>". $error->message);
-        
-              }
-        
-            } else {
-
-              for ($j = 0; $j < sizeof($xml2); $j++) {
-                $xml2->user[$j]->Pass = $_POST["pass"];
-              
-              }
-            
-            }
-            
+         
             if ($getemail != $_POST["email"]) {
               $xml->medico[$i]->Email = $_POST["email"];
-
-              if ($xml2 === false) {
-                echo ("Falha ao carregar o código XML: ");
-                
-                foreach(libxml_get_errors() as $error) {
-                    echo ("<br>". $error->message);
-          
-                }
-          
-              } else {
 
                 for ($j = 0; $j < sizeof($xml2); $j++) {
 
                   if ($getemail == $xml2->user[$j]->Email) {
                     $xml2->user[$j]->Email = $_POST["email"];
+                    $xml2->user[$j]->Pass = $_POST["pass"];
 
                     session_unset();
                 
@@ -263,23 +237,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 }
 
-              }
-              $getemail = $_POST["email"];
-
-              if ($_POST["pass"] != $_SESSION["pass"]) {
-                session_unset();
+            } else {
+              for ($j = 0; $j < sizeof($xml2); $j++) {
+                if ($xml2->user[$j]->Email == $getemail) {
+                  $xml2->user[$j]->Pass = $_POST["pass"];
                 
-                session_destroy();
-
+                }
+              
               }
+            }
+
+            $getemail = $_POST["email"];
+
+            if ($_POST["pass"] != $_SESSION["pass"]) {
+              session_unset();
+                
+              session_destroy();
 
             }
 
           }
 
-        }
+      }
 
-    }
+  }
 
     //Resolve o problema de campos em branco na edição
     if (!empty($_POST["email"])) {
