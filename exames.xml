@@ -1,3 +1,3 @@
 <?xml version="1.0"?>
 <laboratorios>
-<laboratorio><Email>lab@g</Email><exame><ID>1</ID><Pac>joaquim@g</Pac><Data>2020-12-31</Data><Type>sangue</Type><Result>morterip</Result><Presc/><Notes/></exame></laboratorio></laboratorios>
+<laboratorio><Email>lab@g</Email><exame><ID>1</ID><Pac>joaquim@g</Pac><Data>2020-12-31</Data><Type>sangue</Type><Result>morterip</Result><Presc/><Notes/></exame></laboratorio><laboratorio><Email>lab@g</Email><exame><ID>2</ID><Pac>pac@g</Pac><Data>2020-12-08</Data><Type>urina</Type><Result>cancer</Result></exame></laboratorio></laboratorios>

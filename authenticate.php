@@ -50,7 +50,7 @@
                 if ($xml->user[$i]->Type == '4'){
                     $_SESSION['type'] = 4;
 
-                   // header("Location: home_pac.php");
+                    header("Location: home_pac.php");
                     $logged = true;
                     break;
                 } 
