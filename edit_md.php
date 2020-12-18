@@ -4,8 +4,22 @@
 if (!empty($_GET["crm"])) {
   $getcrm = $_GET["crm"];
 
+} else if (!empty($_SESSION["unique1"])) {
+  $getcrm = $_SESSION["unique1"];
+
 } else {
-  $getcrm = $_POST["crm"];
+  $getcrm = $_POST["getcrm"];
+
+}
+
+if (!empty($_GET["email"])) {
+  $getemail = $_GET["email"];
+
+} else if (!empty($_SESSION["unique2"])) {
+  $getemail = $_SESSION["unique2"];
+
+} else {
+  $getemail = $_POST["getemail"];
 
 }
 
@@ -115,6 +129,7 @@ if ($xml === false) {
         </div>
 
         <input type="hidden" class="form-control" name="getcrm" value="<?php echo ($getcrm);?>" required>
+        <input type="hidden" class="form-control" name="getemail" value="<?php echo ($getemail);?>" required>
 
         <hr class="mb-4">
 
@@ -148,11 +163,6 @@ if ($xml === false) {
     </div>        
 
 <?php
-  function console_log( $data ){
-    echo '<script>';
-    echo 'console.log('. json_encode( $data ) .')';
-    echo '</script>';
-  }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $exists = false;
@@ -172,7 +182,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       for ($i = 0; $i < sizeof($xml); $i++) {
 
         if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
-          if (!($getcrm == $xml->medico[$i]->CRM)) {
+          if (!($getcrm == $xml->medico[$i]->CRM) || !($getemail == $xml->medico[$i]->Email)) {
             echo "<script type='text/javascript'>
             $(document).ready(function(){
               $('#Modal').modal('show');
@@ -191,8 +201,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   if (!$exists) {
+    $_SESSION["unique1"] = $_POST["crm"];
+    $_SESSION["unique2"] = $_POST["email"];
     
     $xml = simplexml_load_file("medicos.xml");
+    $xml2 = simplexml_load_file("users.xml");
 
     if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
@@ -212,12 +225,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $xml->medico[$i]->Address = $_POST["address"];
             $xml->medico[$i]->Phone = $_POST["phone"];
             $xml->medico[$i]->Expertise = $_POST["expertise"];
-            
-            if ($getcrm != $_POST["crm"]) {
-              $xml->medico[$i]->CRM = $_POST["crm"];
-              $getcrm = $_POST["crm"];
+
+            $xml->medico[$i]->CRM = $_POST["crm"];
+
+            for ($j = 0; $j < sizeof($xml2); $j++) {
+              if ($xml2->user[$j]->Email == $getemail) {
+                $xml2->user[$j]->Email = $_POST["email"];
+
+              }
 
             }
+
 
           }
 
@@ -228,7 +246,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //Precisa ser testado
     if (!empty($_POST["email"])) {
       $s = simplexml_import_dom($xml);
+      $sv = simplexml_import_dom($xml2);
       $s->saveXML("medicos.xml");
+      $sv->saveXML("users.xml");
+
+      //$_SESSION["unique1"] = 0;
+      //$_SESSION["unique2"] = 0;
     
     }
   }

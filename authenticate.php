@@ -28,6 +28,8 @@
                 if ($xml->user[$i]->Type == '1'){
                     
                     $_SESSION['type'] = 1;
+                    $_SESSION['unique1'] = "";
+                    $_SESSION['unique2'] = "";
 
                     header("Location: home_admin.php");
                     $logged = true;
@@ -35,6 +37,7 @@
                 }
                 if ($xml->user[$i]->Type == '2'){
                     $_SESSION['type'] = 2;
+                    $_SESSION['unique'] = "";
 
                     header("Location: home_md.php");
                     $logged = true;

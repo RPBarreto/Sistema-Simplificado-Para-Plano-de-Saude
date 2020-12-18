@@ -24,6 +24,14 @@ if ($xml === false) {
   $expertise = $_POST["expertise"];
   $crm = $_POST["crm"];
 
+  if ($_SESSION["unique"] != "") {
+    $getcrm = $_SESSION["unique"];
+
+  } else {
+    $getcrm = $_POST["getcrm"];
+
+  }
+
 } else {
     for ($i = 0; $i < sizeof($xml); $i++) {
       
@@ -36,6 +44,8 @@ if ($xml === false) {
         $expertise = $xml->medico[$i]->Expertise;
         $crm = $xml->medico[$i]->CRM;
 
+        $getcrm = $crm;
+
       }
 
     }
@@ -46,7 +56,7 @@ if ($xml === false) {
 
     <div class="container">
   <div class="py-5 text-center">
-    <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+    <img class="d-block mx-auto mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
     <h2>Editar médico</h2>
   </div>
     <div class="py-5 text-center">
@@ -117,6 +127,7 @@ if ($xml === false) {
         </div>
 
         <input type="hidden" class="form-control" name="getemail" value="<?php echo ($getemail);?>" required>
+        <input type="hidden" class="form-control" name="getcrm" value="<?php echo ($getcrm);?>" required>
 
         <hr class="mb-4">
 
@@ -150,6 +161,7 @@ if ($xml === false) {
     </div>        
 
 <?php
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $exists = false;
   libxml_use_internal_errors(true);
@@ -167,8 +179,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
       for ($i = 0; $i < sizeof($xml); $i++) {
 
-        if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
-          if (!($getemail == $xml->medico[$i]->Email)) {
+        if ($_POST["email"] == $xml->medico[$i]->Email || $_POST["crm"] == $xml->medico[$i]->CRM) {
+          if (!($getemail == $xml->medico[$i]->Email) || !($getcrm == $xml->medico[$i]->CRM)) {
             echo "<script type='text/javascript'>
             $(document).ready(function(){
               $('#Modal').modal('show');
@@ -187,7 +199,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   if (!$exists) {
-    
+    $_SESSION["unique"] = $_POST["crm"];
+
     $xml = simplexml_load_file("medicos.xml");
 
     $xml2 = simplexml_load_file("users.xml");
@@ -210,6 +223,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $xml->medico[$i]->Address = $_POST["address"];
             $xml->medico[$i]->Phone = $_POST["phone"];
             $xml->medico[$i]->Expertise = $_POST["expertise"];
+            $xml->medico[$i]->CRM = $_POST["crm"];
          
             if ($getemail != $_POST["email"]) {
               $xml->medico[$i]->Email = $_POST["email"];
@@ -243,7 +257,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $getemail = $_POST["email"];
 
-            if ($_POST["pass"] != $_SESSION["pass"]) {
+            if (!empty($_SESSION["pass"]) && $_POST["pass"] != $_SESSION["pass"]) {
               session_unset();
                 
               session_destroy();
