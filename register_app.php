@@ -60,7 +60,7 @@
     }
 
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = 0;
+    $id = 1;
 
     $xml = simplexml_load_file("consultas.xml");
 

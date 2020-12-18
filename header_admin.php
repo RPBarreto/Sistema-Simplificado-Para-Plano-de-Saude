@@ -51,12 +51,15 @@
       session_start();
       $user = "";
 
-      if (!isset($_SESSION["user"]) || !isset($_SESSION["pass"])) {
+      if (!isset($_SESSION["user"]) || !isset($_SESSION["pass"]) || !isset($_SESSION["type"])) {
         header("Location: index.php?error=access_denied");
 
-      } else {
+      } else if ($_SESSION["type"] == 1) {
         $user = $_SESSION["user"];
 
+      } else {
+        header("Location: index.php?error=access_denied");
+        
       }
 
       if(!empty($_POST["logout"])) { 

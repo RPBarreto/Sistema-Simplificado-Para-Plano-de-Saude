@@ -51,12 +51,15 @@
       session_start();
       $user = "";
 
-      if (!isset($_SESSION["user"]) || !isset($_SESSION["pass"])) {
+      if (!isset($_SESSION["user"]) || !isset($_SESSION["pass"]) || !isset($_SESSION["type"])) {
         header("Location: index.php?error=access_denied");
 
-      } else {
+      } else if ($_SESSION["type"] == 2) {
         $user = $_SESSION["user"];
 
+      } else {
+        header("Location: index.php?error=access_denied");
+        
       }
 
       if(!empty($_POST["logout"])) { 
@@ -100,9 +103,6 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="list_apps.php#" id="nav-link">Listar consultas</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="list_pac_md.php#" id="nav-link">Listar pacientes</a>
           </li>
           <li class="nav-item">
             <form id="logoutForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
