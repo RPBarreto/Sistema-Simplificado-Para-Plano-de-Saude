@@ -23,6 +23,15 @@ if ($xml === false) {
   $expertise = $_POST["expertise"];
   $cnpj = $_POST["cnpj"];
 
+  if ($_SESSION["unique"] != "") {
+    $getcnpj = $_SESSION["unique"];
+
+  } else {
+    $getcnpj = $_POST["getcnpj"];
+
+  }
+  
+
 } else {
     for ($i = 0; $i < sizeof($xml); $i++) {
       
@@ -33,6 +42,8 @@ if ($xml === false) {
         $phone = $xml->laboratorio[$i]->Phone;
         $expertise = $xml->laboratorio[$i]->Expertise;
         $cnpj = $xml->laboratorio[$i]->CNPJ;
+
+        $getcnpj = $cnpj;
 
       }
 
@@ -108,6 +119,7 @@ if ($xml === false) {
         </div>
 
         <input type="hidden" class="form-control" name="getemail" value="<?php echo ($getemail);?>" required>
+        <input type="hidden" class="form-control" name="getcnpj" value="<?php echo ($getcnpj);?>" required>
 
         <hr class="mb-4">
 
@@ -159,8 +171,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
       for ($i = 0; $i < sizeof($xml); $i++) {
 
-        if ($_POST["cnpj"] == $xml->laboratorio[$i]->CRM || $_POST["email"] == $xml->laboratorio[$i]->Email) {
-          if (!($getemail == $xml->laboratorio[$i]->Email)) {
+        if ($_POST["email"] == $xml->laboratorio[$i]->Email || $_POST["cnpj"] == $xml->laboratorio[$i]->CNPJ) {
+          if (!($getemail == $xml->laboratorio[$i]->Email) || !($getcnpj == $xml->laboratorio[$i]->CNPJ)) {
             echo "<script type='text/javascript'>
             $(document).ready(function(){
               $('#Modal').modal('show');
@@ -179,6 +191,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   if (!$exists) {
+    $_SESSION["unique"] = $_POST["cnpj"];
+
     
     $xml = simplexml_load_file("laboratorios.xml");
 
@@ -235,7 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $getemail = $_POST["email"];
 
-            if ($_POST["pass"] != $_SESSION["pass"]) {
+            if (!empty($_SESSION["pass"]) && $_POST["pass"] != $_SESSION["pass"]) {
               session_unset();
                 
               session_destroy();

@@ -42,6 +42,7 @@
                 }
                 if ($xml->user[$i]->Type == '3'){
                     $_SESSION['type'] = 3;
+                    $_SESSION['unique'] = "";
 
                     header("Location: home_lab.php");
                     $logged = true;
