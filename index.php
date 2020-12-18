@@ -52,7 +52,7 @@
 
     <form class="needs-validation" novalidate method="post" action="authenticate.php">
       <div class="text-center mb-4">
-        <img class="mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+        <img class="mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal"></h1>
         
       </div>
@@ -153,7 +153,7 @@
   <body>
     <form class="form-signin" method="post" action="header_admin.php">
       <div class="text-center mb-4">
-        <img class="mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+        <img class="mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal"></h1>
       </div>
 

@@ -5,4 +5,4 @@
 <Pass>123</Pass>
 <Type>1</Type>
 </user>
-<user><Email>tas@g</Email><Pass>1234</Pass><Type>2</Type></user></cadastro>
+<user><Email>tas@g</Email><Pass>12</Pass><Type>2</Type></user><user><Email>lab@g</Email><Pass>1234</Pass><Type>3</Type></user></cadastro>

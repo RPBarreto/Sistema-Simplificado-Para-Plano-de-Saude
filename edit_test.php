@@ -1,4 +1,4 @@
-<?php include "./header_md.php" ?>
+<?php include "./header_lab.php" ?>
 
 <?php
 if (!empty($_POST["id"])) {
@@ -11,7 +11,7 @@ if (!empty($_POST["id"])) {
 
 libxml_use_internal_errors(true);
 
-$xml = simplexml_load_file("consultas.xml");
+$xml = simplexml_load_file("exames.xml");
 
 if ($xml === false) {
     echo ("Falha ao carregar o código XML: ");
@@ -24,17 +24,17 @@ if ($xml === false) {
 } else if (!empty($_POST["getid"])) {
   $pac = $_POST["pac"];
   $data = $_POST["data"];
-  $presc = $_POST["presc"];
-  $notes = $_POST["notes"];
+  $type = $_POST["type"];
+  $result = $_POST["result"];
 
 } else {
     for ($i = 0; $i < sizeof($xml); $i++) {
       
-      if ($xml->medico[$i]->Email == $_SESSION["user"] && $xml->medico[$i]->consulta->ID == $getid) {
-        $pac = $xml->medico[$i]->consulta->Pac;
-        $data = $xml->medico[$i]->consulta->Data;
-        $presc = $xml->medico[$i]->consulta->Presc;
-        $notes = $xml->medico[$i]->consulta->Notes;
+      if ($xml->laboratorio[$i]->Email == $_SESSION["user"] && $xml->laboratorio[$i]->exame->ID == $getid) {
+        $pac = $xml->laboratorio[$i]->exame->Pac;
+        $data = $xml->laboratorio[$i]->exame->Data;
+        $type = $xml->laboratorio[$i]->exame->Type;
+        $result = $xml->laboratorio[$i]->exame->Result;
 
       }
 
@@ -47,7 +47,7 @@ if ($xml === false) {
     <div class="container">
   <div class="py-5 text-center">
     <img class="d-block mx-auto mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
-    <h2>Editar consulta</h2>
+    <h2>Editar exame</h2>
   </div>
     <div class="py-5 text-center">
       <form class="needs-validation" novalidate  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
@@ -69,18 +69,18 @@ if ($xml === false) {
         </div>
 
         <div class="mb-3">
-          <label for="presc">Receita</label>
-          <input type="text" class="form-control" id="presc" name="presc" placeholder="Receita" value="<?php echo ($presc);?>" required>
+          <label for="type">Tipo de exame</label>
+          <input type="text" class="form-control" id="type" name="type" placeholder="Tipo de exame" value="<?php echo ($type);?>" required>
           <div class="invalid-feedback">
-            Insira uma receita.
+            Insira o tipo de exame.
           </div>
         </div>
 
         <div class="mb-3">
-          <label for="address">Observações</label>
-          <input type="text" class="form-control" id="notes" name="notes" placeholder="Observações" value="<?php echo ($notes);?>" required>
+          <label for="result">Resultado</label>
+          <input type="text" class="form-control" id="result" name="result" placeholder="Resultado" value="<?php echo ($result);?>" required>
           <div class="invalid-feedback">
-            Insira suas observações.
+            Insira o resultado.
           </div>
         </div>
 
@@ -103,7 +103,7 @@ if ($xml === false) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["pac"])) {
   libxml_use_internal_errors(true);
     
-  $xml = simplexml_load_file("consultas.xml");
+  $xml = simplexml_load_file("exames.xml");
 
   if ($xml === false) {
     echo ("Falha ao carregar o código XML: ");
@@ -116,11 +116,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["pac"])) {
   } else {
       for ($i = 0; $i < sizeof($xml); $i++) {
           
-        if ($xml->medico[$i]->Email == $_SESSION["user"] && $xml->medico[$i]->consulta->ID == $getid) {
-            $xml->medico[$i]->consulta->Pac = $_POST["pac"];
-            $xml->medico[$i]->consulta->Data = $_POST["data"];
-            $xml->medico[$i]->consulta->Presc = $_POST["presc"];
-            $xml->medico[$i]->consulta->Notes = $_POST["notes"];
+        if ($xml->laboratorio[$i]->Email == $_SESSION["user"] && $xml->laboratorio[$i]->exame->ID == $getid) {
+            $xml->laboratorio[$i]->exame->Pac = $_POST["pac"];
+            $xml->laboratorio[$i]->exame->Data = $_POST["data"];
+            $xml->laboratorio[$i]->exame->Type = $_POST["type"];
+            $xml->laboratorio[$i]->exame->Result = $_POST["result"];
 
         }
 
@@ -131,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["pac"])) {
     //Precisa ser testado
     //if (!empty($_POST["pac"])) {
       $s = simplexml_import_dom($xml);
-      $s->saveXML("consultas.xml");
+      $s->saveXML("exames.xml");
     
     //}
   }

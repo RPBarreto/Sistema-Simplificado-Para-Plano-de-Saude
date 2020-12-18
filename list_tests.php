@@ -1,9 +1,9 @@
-<?php include "./header_md.php" ?>
+<?php include "./header_lab.php" ?>
 
     <div class="container">
         <div class="py-5 text-center">
             <img class="d-block mx-auto mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
-            <h2>Lista de consultas</h2>
+            <h2>Lista de exames</h2>
         </div>
         <table class="table table-striped">
         <thead>
@@ -11,28 +11,28 @@
             <th scope="col">#</th>
             <th scope="col">Paciente</th>
             <th scope="col">Data</th>
-            <th scope="col">Receita</th>
-            <th scope="col">Observações</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Resultado</th>
             <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
         <?php
-            $xml = simplexml_load_file("consultas.xml");
+            $xml = simplexml_load_file("exames.xml");
 
             for ($i = 0; $i < sizeof($xml); $i++) {
 
-              if ($xml->medico[$i]->Email == $_SESSION["user"]) {
+              if ($xml->laboratorio[$i]->Email == $_SESSION["user"]) {
             
                   echo "<tr>
-                  <th scope='row'>".($xml->medico[$i]->consulta->ID)."</th>
-                  <td>".$xml->medico[$i]->consulta->Pac."</td>
-                  <td>".$xml->medico[$i]->consulta->Data."</td>
-                  <td>".$xml->medico[$i]->consulta->Presc."</td>
-                  <td>".$xml->medico[$i]->consulta->Notes."</td>
+                  <th scope='row'>".($xml->laboratorio[$i]->exame->ID)."</th>
+                  <td>".$xml->laboratorio[$i]->exame->Pac."</td>
+                  <td>".$xml->laboratorio[$i]->exame->Data."</td>
+                  <td>".$xml->laboratorio[$i]->exame->Type."</td>
+                  <td>".$xml->laboratorio[$i]->exame->Result."</td>
                   <td>
-                    <form action='edit_app.php' method='POST'>
-                      <input class='form-control' name='id' type='hidden' value='".$xml->medico[$i]->consulta->ID."' />
+                    <form action='edit_test.php' method='POST'>
+                      <input class='form-control' name='id' type='hidden' value='".$xml->laboratorio[$i]->exame->ID."' />
                       <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
                     </form>
                   

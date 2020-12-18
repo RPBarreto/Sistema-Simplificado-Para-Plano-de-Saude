@@ -21,7 +21,7 @@
     </div>   
 
   <div class="py-5 text-center">
-    <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+    <img class="d-block mx-auto mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
     <h2>Cadastrar médico</h2>
   </div>
   <div class="alert" role="alert" id="Alert" style="display:none;">

@@ -1,9 +1,9 @@
-<?php include "./header_md.php" ?>
+<?php include "./header_lab.php" ?>
 
     <div class="container">
   <div class="py-5 text-center">
     <img class="d-block mx-auto mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
-    <h2>Cadastrar consulta</h2>
+    <h2>Cadastrar exame</h2>
   </div>
     <div class="py-5 text-center">
       <form class="needs-validation" novalidate  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
@@ -16,19 +16,19 @@
             </div>
           </div>
           <div class="col-md-6 mb-3">
-            <label for="presc">Receita</label>
-            <input type="text" class="form-control" id="presc" name="presc" placeholder="Receita" value="" required>
+            <label for="type">Tipo de exame</label>
+            <input type="text" class="form-control" id="type" name="type" placeholder="Tipo de exame" value="" required>
             <div class="invalid-feedback">
-              Insira uma receita.
+              Insira o tipo do exame.
             </div>
           </div>
         </div>
 
         <div class="mb-3">
-          <label for="notes">Observações</label>
-          <input type="text" class="form-control" id="notes" name="notes" placeholder="Observações" required>
+          <label for="result">Resultado</label>
+          <input type="text" class="form-control" id="result" name="result" placeholder="Resultado" required>
           <div class="invalid-feedback">
-            Insira suas observações.
+            Insira o resultado.
           </div>
         </div>
 
@@ -53,20 +53,15 @@
         <script src="form-validation.js"></script>
 
     <?php
-    function console_log( $data ){
-      echo '<script>';
-      echo 'console.log('. json_encode( $data ) .')';
-      echo '</script>';
-    }
 
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = 1;
 
-    $xml = simplexml_load_file("consultas.xml");
+    $xml = simplexml_load_file("exames.xml");
 
     for ($i = 0; $i < sizeof($xml); $i++) {
-        if ($xml->medico[$i]->Email == $_SESSION["user"]) {
-            for ($j = 0; $j < sizeof($xml->medico[$i]->Email); $j++) {
+        if ($xml->laboratorio[$i]->Email == $_SESSION["user"]) {
+            for ($j = 0; $j < sizeof($xml->laboratorio[$i]->Email); $j++) {
                 $id += 1;
 
             }
@@ -75,18 +70,18 @@
 
     }
 
-    $node = $xml->addChild("medico");
+    $node = $xml->addChild("laboratorio");
     $node->addChild("Email", $_SESSION["user"]);
-    $node2 = $node->addChild("consulta");
+    $node2 = $node->addChild("exame");
     $node2->addChild("ID", $id);
     $node2->addChild("Pac", $_POST["pac"]);
     $node2->addChild("Data", $_POST["data"]);
-    $node2->addChild("Presc", $_POST["presc"]);
-    $node2->addChild("Notes", $_POST["notes"]);
+    $node2->addChild("Type", $_POST["type"]);
+    $node2->addChild("Result", $_POST["result"]);
     
     if (!empty($_POST["pac"])) {
         $s = simplexml_import_dom($xml);
-        $s->saveXML("consultas.xml");
+        $s->saveXML("exames.xml");
     
     }
 

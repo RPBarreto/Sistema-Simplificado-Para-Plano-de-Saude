@@ -43,7 +43,7 @@
                 if ($xml->user[$i]->Type == '3'){
                     $_SESSION['type'] = 3;
 
-                    //header("Location: home_lab.php");
+                    header("Location: home_lab.php");
                     $logged = true;
                     break;
                 }

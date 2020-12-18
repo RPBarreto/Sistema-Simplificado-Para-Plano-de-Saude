@@ -1,11 +1,11 @@
-<?php include "./header_md.php" ?>
+<?php include "./header_lab.php" ?>
 
 <?php
 $getemail = $_SESSION["user"];
 
 libxml_use_internal_errors(true);
 
-$xml = simplexml_load_file("medicos.xml");
+$xml = simplexml_load_file("laboratorios.xml");
 
 if ($xml === false) {
     echo ("Falha ao carregar o código XML: ");
@@ -17,24 +17,22 @@ if ($xml === false) {
 
 } else if (!empty($_POST["getemail"])) {
   $name = $_POST["firstname"];
-  $last_name = $_POST["lastname"];
   $email = $_POST["email"];
   $address = $_POST["address"];
   $phone = $_POST["phone"];
   $expertise = $_POST["expertise"];
-  $crm = $_POST["crm"];
+  $cnpj = $_POST["cnpj"];
 
 } else {
     for ($i = 0; $i < sizeof($xml); $i++) {
       
-      if ($getemail == $xml->medico[$i]->Email) {
-        $name = $xml->medico[$i]->Name;
-        $last_name = $xml->medico[$i]->LastName;
-        $email = $xml->medico[$i]->Email;
-        $address = $xml->medico[$i]->Address;
-        $phone = $xml->medico[$i]->Phone;
-        $expertise = $xml->medico[$i]->Expertise;
-        $crm = $xml->medico[$i]->CRM;
+      if ($getemail == $xml->laboratorio[$i]->Email) {
+        $name = $xml->laboratorio[$i]->Name;
+        $email = $xml->laboratorio[$i]->Email;
+        $address = $xml->laboratorio[$i]->Address;
+        $phone = $xml->laboratorio[$i]->Phone;
+        $expertise = $xml->laboratorio[$i]->Expertise;
+        $cnpj = $xml->laboratorio[$i]->CNPJ;
 
       }
 
@@ -46,10 +44,10 @@ if ($xml === false) {
 
     <div class="container">
   <div class="py-5 text-center">
-    <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-    <h2>Editar médico</h2>
+    <img class="d-block mx-auto mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
+    <h2>Editar laboratório</h2>
   </div>
-    <div class="py-5 text-center">
+  <div class="py-5 text-center">
       <form class="needs-validation" novalidate  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
         <div class="row">
           <div class="col-md-6 mb-3">
@@ -60,10 +58,10 @@ if ($xml === false) {
             </div>
           </div>
           <div class="col-md-6 mb-3">
-            <label for="lastName">Sobrenome</label>
-            <input type="text" class="form-control" id="lastName" name="lastname" placeholder="Sobrenome" value="<?php echo ($last_name);?>" required>
+            <label for="cnpj">CNPJ</label>
+            <input type="number" class="form-control" id="cnpj" name="cnpj" placeholder="Cnpj" value="<?php echo ($cnpj);?>" required>
             <div class="invalid-feedback">
-              Insira um sobrenome válido.
+              Insira um cnpj válido.
             </div>
           </div>
         </div>
@@ -93,25 +91,18 @@ if ($xml === false) {
         </div>
 
         <div class="row">
-          <div class="col-md-5 mb-3">
+          <div class="col-md-6 mb-3">
             <label for="phone">Telefone</label>
             <input type="tel" class="form-control" id="phone" name="phone" placeholder="Telefone" value="<?php echo ($phone);?>" required>
             <div class="invalid-feedback">
               Insira um número de telefone válido.
             </div>
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="col-md-6 mb-3">
             <label for="expertise">Especialidade</label>
               <input type="text" class="form-control" id="expertise" name="expertise" placeholder="Especialidade" value="<?php echo ($expertise);?>" required>
               <div class="invalid-feedback">
                 Insira uma especialidade.
-              </div>
-          </div>
-          <div class="col-md-3 mb-3">
-          <label for="crm">CRM</label>
-              <input type="number" class="form-control" id="crm" name="crm" min="0" placeholder="" value="<?php echo ($crm);?>" required>
-              <div class="invalid-feedback">
-                Insira um CRM válido.
               </div>
           </div>
         </div>
@@ -140,7 +131,7 @@ if ($xml === false) {
             </button>
           </div>
           <div class="modal-body">
-            <p>E-mail ou CRM já estão em uso</p>
+            <p>E-mail ou CNPJ já estão em uso</p>
           </div>
           <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
@@ -150,11 +141,12 @@ if ($xml === false) {
     </div>        
 
 <?php
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $exists = false;
   libxml_use_internal_errors(true);
 
-  $xml = simplexml_load_file("medicos.xml");
+  $xml = simplexml_load_file("laboratorios.xml");
 
   if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
@@ -167,8 +159,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
       for ($i = 0; $i < sizeof($xml); $i++) {
 
-        if ($_POST["crm"] == $xml->medico[$i]->CRM || $_POST["email"] == $xml->medico[$i]->Email) {
-          if (!($getemail == $xml->medico[$i]->Email)) {
+        if ($_POST["cnpj"] == $xml->laboratorio[$i]->CRM || $_POST["email"] == $xml->laboratorio[$i]->Email) {
+          if (!($getemail == $xml->laboratorio[$i]->Email)) {
             echo "<script type='text/javascript'>
             $(document).ready(function(){
               $('#Modal').modal('show');
@@ -188,7 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   if (!$exists) {
     
-    $xml = simplexml_load_file("medicos.xml");
+    $xml = simplexml_load_file("laboratorios.xml");
 
     $xml2 = simplexml_load_file("users.xml");
 
@@ -203,16 +195,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         for ($i = 0; $i < sizeof($xml); $i++) {
           
-          if ($getemail == $xml->medico[$i]->Email) {
-            $xml->medico[$i]->Name = $_POST["firstname"];
-            $xml->medico[$i]->LastName = $_POST["lastname"];
-            $xml->medico[$i]->Email = $_POST["email"];
-            $xml->medico[$i]->Address = $_POST["address"];
-            $xml->medico[$i]->Phone = $_POST["phone"];
-            $xml->medico[$i]->Expertise = $_POST["expertise"];
+          if ($getemail == $xml->laboratorio[$i]->Email) {
+            $xml->laboratorio[$i]->Name = $_POST["firstname"];
+            $xml->laboratorio[$i]->CNPJ = $_POST["cnpj"];
+            $xml->laboratorio[$i]->Email = $_POST["email"];
+            $xml->laboratorio[$i]->Address = $_POST["address"];
+            $xml->laboratorio[$i]->Phone = $_POST["phone"];
+            $xml->laboratorio[$i]->Expertise = $_POST["expertise"];
          
             if ($getemail != $_POST["email"]) {
-              $xml->medico[$i]->Email = $_POST["email"];
+              $xml->laboratorio[$i]->Email = $_POST["email"];
 
                 for ($j = 0; $j < sizeof($xml2); $j++) {
 
@@ -259,7 +251,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //Resolve o problema de campos em branco na edição
     if (!empty($_POST["email"])) {
       $s = simplexml_import_dom($xml);
-      $s->saveXML("medicos.xml");
+      $s->saveXML("laboratorios.xml");
 
       $sv = simplexml_import_dom($xml2);
       $sv->saveXML("users.xml");
