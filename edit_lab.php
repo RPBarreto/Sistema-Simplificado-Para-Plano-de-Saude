@@ -4,8 +4,22 @@
 if (!empty($_GET["cnpj"])) {
   $getcnpj = $_GET["cnpj"];
 
+} else if (!empty($_SESSION["unique1"])) {
+  $getcnpj = $_SESSION["unique1"];
+
 } else {
-  $getcnpj = $_POST["cnpj"];
+  $getcnpj = $_POST["getcnpj"];
+
+}
+
+if (!empty($_GET["email"])) {
+  $getemail = $_GET["email"];
+
+} else if (!empty($_SESSION["unique2"])) {
+  $getemail = $_SESSION["unique2"];
+
+} else {
+  $getemail = $_POST["getemail"];
 
 }
 
@@ -105,6 +119,9 @@ if ($xml === false) {
           </div>
         </div>
 
+        <input type="hidden" class="form-control" name="getcnpj" value="<?php echo ($getcnpj);?>" required>
+        <input type="hidden" class="form-control" name="getemail" value="<?php echo ($getemail);?>" required>
+
         <hr class="mb-4">
 
         <button class="btn btn-primary btn-lg btn-block" type="submit">Editar</button>
@@ -137,11 +154,6 @@ if ($xml === false) {
     </div>        
 
 <?php
-  function console_log( $data ){
-    echo '<script>';
-    echo 'console.log('. json_encode( $data ) .')';
-    echo '</script>';
-  }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $exists = false;
@@ -159,10 +171,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   
   } else {
       for ($i = 0; $i < sizeof($xml); $i++) {
-        console_log($xml->laboratorio[$i]->Email);
 
         if ($_POST["cnpj"] == $xml->laboratorio[$i]->CNPJ || $_POST["email"] == $xml->laboratorio[$i]->Email) {
-          if (!($getcnpj == $xml->laboratorio[$i]->CNPJ)) {
+          if (!($getcnpj == $xml->laboratorio[$i]->CNPJ) || !($getemail == $xml->laboratorio[$i]->Email)) {
             echo "<script type='text/javascript'>
             $(document).ready(function(){
               $('#Modal').modal('show');
@@ -181,8 +192,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   if (!$exists) {
+    $_SESSION["unique1"] = $_POST["cnpj"];
+    $_SESSION["unique2"] = $_POST["email"];
     
     $xml = simplexml_load_file("laboratorios.xml");
+    $xml2 = simplexml_load_file("users.xml");
 
     if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
@@ -201,11 +215,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $xml->laboratorio[$i]->Address = $_POST["address"];
             $xml->laboratorio[$i]->Phone = $_POST["phone"];
             $xml->laboratorio[$i]->Expertise = $_POST["expertise"];
-          
-            if ($getcnpj != $_POST["cnpj"]) {
-              $xml->laboratorio[$i]->CNPJ = $_POST["cnpj"];
-              $getcnpj = $_POST["cnpj"];
+            
+            $xml->laboratorio[$i]->CNPJ = $_POST["cnpj"];
+            
+            for ($j = 0; $j < sizeof($xml2); $j++) {
+              if ($xml2->user[$j]->Email == $getemail) {
+                $xml2->user[$j]->Email = $_POST["email"];
 
+              }
             }
 
           }
@@ -215,7 +232,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $s = simplexml_import_dom($xml);
+    $sv = simplexml_import_dom($xml2);
     $s->saveXML("laboratorios.xml");
+    $sv->saveXML("users.xml");
     
   }
 

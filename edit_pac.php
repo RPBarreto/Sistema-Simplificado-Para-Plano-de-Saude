@@ -4,8 +4,22 @@
 if (!empty($_GET["cpf"])) {
   $getcpf = $_GET["cpf"];
 
+} else if (!empty($_SESSION["unique1"])) {
+  $getcpf = $_SESSION["unique1"];
+
 } else {
-  $getcpf = $_POST["cpf"];
+  $getcpf = $_POST["getcpf"];
+
+}
+
+if (!empty($_GET["email"])) {
+  $getemail = $_GET["email"];
+
+} else if (!empty($_SESSION["unique2"])) {
+  $getemail = $_SESSION["unique2"];
+
+} else {
+  $getemail = $_POST["getemail"];
 
 }
 
@@ -118,6 +132,9 @@ if ($xml === false) {
           </div>
         </div>
 
+        <input type="hidden" class="form-control" name="getcpf" value="<?php echo ($getcpf);?>" required>
+        <input type="hidden" class="form-control" name="getemail" value="<?php echo ($getemail);?>" required>
+
         <hr class="mb-4">
 
         <button class="btn btn-primary btn-lg btn-block" type="submit">Editar</button>
@@ -150,11 +167,6 @@ if ($xml === false) {
     </div>        
 
 <?php
-  function console_log( $data ){
-    echo '<script>';
-    echo 'console.log('. json_encode( $data ) .')';
-    echo '</script>';
-  }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $exists = false;
@@ -172,10 +184,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   
   } else {
       for ($i = 0; $i < sizeof($xml); $i++) {
-        console_log($xml->paciente[$i]->email);
 
         if ($_POST["cpf"] == $xml->paciente[$i]->CPF || $_POST["email"] == $xml->paciente[$i]->Email) {
-          if (!($getcpf == $xml->paciente[$i]->CPF)) {
+          if (!($getcpf == $xml->paciente[$i]->CPF) || !($getemail == $xml->paciente[$i]->Email)) {
             echo "<script type='text/javascript'>
             $(document).ready(function(){
               $('#Modal').modal('show');
@@ -194,8 +205,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   if (!$exists) {
+    $_SESSION["unique1"] = $_POST["cpf"];
+    $_SESSION["unique2"] = $_POST["email"];
     
     $xml = simplexml_load_file("pacientes.xml");
+    $xml2 = simplexml_load_file("users.xml");
+
 
     if ($xml === false) {
       echo ("Falha ao carregar o código XML: ");
@@ -215,11 +230,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $xml->paciente[$i]->Address = $_POST["address"];
             $xml->paciente[$i]->Phone = $_POST["phone"];
             $xml->paciente[$i]->Genero = $_POST["genero"];
-            
-            if ($getcpf != $_POST["cpf"]) {
-              $xml->paciente[$i]->CPF = $_POST["cpf"];
-              $getcpf = $_POST["cpf"];
 
+            $xml->paciente[$i]->CPF = $_POST["cpf"];
+            
+            for ($j = 0; $j < sizeof($xml2); $j++) {
+              if ($xml2->user[$j]->Email == $getemail) {
+                $xml2->user[$j]->Email = $_POST["email"];
+
+              }
             }
 
           }
@@ -229,7 +247,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $s = simplexml_import_dom($xml);
+    $sv = simplexml_import_dom($xml2);
+
     $s->saveXML("pacientes.xml");
+    $sv->saveXML("users.xml");
+
     
   }
 

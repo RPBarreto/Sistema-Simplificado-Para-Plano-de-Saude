@@ -22,6 +22,8 @@
         <tbody>
         <?php
             $xml = simplexml_load_file("pacientes.xml");
+            $_SESSION["unique1"] = 0;
+            $_SESSION["unique2"] = 0;
 
             for ($i = 0; $i < sizeof($xml); $i++) {
               echo "<tr>
