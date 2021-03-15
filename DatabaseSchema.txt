@@ -1,0 +1,57 @@
+CREATE DATABASE `medicos` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+CREATE TABLE `consultas` (
+  `medico` varchar(50) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `paciente` varchar(50) DEFAULT NULL,
+  `data` date DEFAULT NULL,
+  `presc` varchar(50) DEFAULT NULL,
+  `notes` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `exames` (
+  `laboratorio` varchar(50) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `paciente` varchar(50) DEFAULT NULL,
+  `data` date DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `result` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `medicos` (
+  `name` varchar(50) DEFAULT NULL,
+  `lastname` varchar(50) DEFAULT NULL,
+  `crm` varchar(30) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `expertise` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `laboratorios` (
+  `name` varchar(50) DEFAULT NULL,
+  `cnpj` varchar(30) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `expertise` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `users` (
+  `email` varchar(50) DEFAULT NULL,
+  `pass` varchar(50) DEFAULT NULL,
+  `type` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `pacientes` (
+  `name` varchar(50) DEFAULT NULL,
+  `lastname` varchar(50) DEFAULT NULL,
+  `cpf` varchar(11) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `genero` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
