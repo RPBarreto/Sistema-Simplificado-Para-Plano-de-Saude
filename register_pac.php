@@ -79,73 +79,74 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
       <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="assets/dist/js/bootstrap.bundle.min.js"></script>
         <script src="form-validation.js"></script>
-        <?php
-    function console_log( $data ){
-      echo '<script>';
-      echo 'console.log('. json_encode( $data ) .')';
-      echo '</script>';
-    }
 
+<?php
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $exists = false;
 
-    libxml_use_internal_errors(true);
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-    $xml = simplexml_load_file("pacientes.xml");
+    $sql = "SELECT * FROM pacientes WHERE cpf = '".$_POST["cpf"]."' OR email = '".$_POST["email"]."';";
 
-    if ($xml === false) {
-        echo ("Falha ao carregar o código XML: ");
-        
-        foreach(libxml_get_errors() as $error) {
-            echo ("<br>". $error->message);
+    $res = $conn->query($sql);
 
-        }
-    
+
+
+    if ($res->rowCount() > 0) {
+      echo "<script type='text/javascript'>
+      $(document).ready(function(){
+        $('#Modal').modal('show');
+      });
+      </script>";
+
     } else {
-        for ($i = 0; $i < sizeof($xml); $i++) {
-          console_log($xml->paciente[$i]->email);
+      $sql = "INSERT INTO pacientes (name, lastname, cpf, email, address, phone, genero) VALUES (:name, :lastname, :cpf, :email, :address, :phone, :genero);";
+      $stmt = $conn->prepare($sql);
 
-          if ($_POST["cpf"] == $xml->paciente[$i]->CPF || $_POST["email"] == $xml->paciente[$i]->Email) {
-            echo "<script type='text/javascript'>
-            $(document).ready(function(){
-              $('#Modal').modal('show');
-            });
-            </script>";
-            $exists = true;
-            break;
+      $stmt->bindParam(":name", $_POST["firstName"]);
+      $stmt->bindParam(":lastname", $_POST["lastName"]);
+      $stmt->bindParam(":cpf", $_POST["cpf"]);
+      $stmt->bindParam(":email", $_POST["email"]);
+      $stmt->bindParam(":address", $_POST["address"]);
+      $stmt->bindParam(":phone", $_POST["phone"]);
+      $stmt->bindParam("genero", $_POST["genero"]);
 
-          }
+      $stmt->execute();
 
-        }
+      $conn->exec($sql);
 
-    }
+      $sql = "INSERT INTO users (email, pass, type) VALUES (:email, :pass, 4);";
+      $stmt = $conn->prepare($sql);
 
-    if (!$exists) {
-      $xml = simplexml_load_file("pacientes.xml");
-      $node = $xml->addChild("paciente");
+      $stmt->bindParam(":email", $_POST["email"]);
+      $stmt->bindParam(":pass", $_POST["cpf"]);
 
-      $node->addChild("Name", $_POST["firstName"]);
-      $node->addChild("LastName", $_POST["lastName"]);
-      $node->addChild("CPF", $_POST["cpf"]);
-      $node->addChild("Email", $_POST["email"]);
-      $node->addChild("Address", $_POST["address"]);
-      $node->addChild("Phone", $_POST["phone"]);
-      $node->addChild("Genero", $_POST["genero"]);
-      
+      $stmt->execute();
 
-      $s = simplexml_import_dom($xml);
-      $s->saveXML("pacientes.xml");
-
-      $xml = simplexml_load_file("users.xml");
-      $node = $xml->addChild("user");
-      $node->addChild("Email", $_POST["email"]);
-      $node->addChild("Pass", $_POST["cpf"]);
-      $node->addChild("Type", '4');
-      $s = simplexml_import_dom($xml);
-      $s->saveXML("users.xml");
+      $conn->exec($sql);
     }
 
   }
-  ?>     
+  ?>
+
+  <div class="modal" tabindex="-1" role="dialog" id="Modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Erro</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Este e-mail ou CPF já foi cadastrado</p>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   </body>
 </html>

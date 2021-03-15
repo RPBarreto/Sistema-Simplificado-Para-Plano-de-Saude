@@ -16,26 +16,27 @@
         </thead>
         <tbody>
         <?php
-            $xml = simplexml_load_file("consultas.xml");
+            $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-            for ($i = 0; $i < sizeof($xml); $i++) {
-
-              if ($xml->medico[$i]->consulta->Pac == $_SESSION["user"]) {
+            $sql = "SELECT * FROM consultas as c JOIN pacientes as p WHERE c.paciente = p.email";
             
-                  echo "<tr>
-                  <th scope='row'>".($xml->medico[$i]->consulta->ID)."</th>
-                  <td>".$xml->medico[$i]->Email."</td>
-                  <td>".$xml->medico[$i]->consulta->Data."</td>
-                  <td>".$xml->medico[$i]->consulta->Presc."</td>
+            $res = $conn->query($sql);
 
-                </tr>";
-
-              }
-
+            if ($res->rowCount() > 0) {
+                $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+        
             }
 
+            for ($i = 0; $i < sizeof($rows); $i++) {
+                echo "<tr>
+                <th scope='row'>".$rows[$i]["id"]."</th>
+                <td>".$rows[$i]["medico"]."</td>
+                <td>".$rows[$i]["data"]."</td>
+                <td>".$rows[$i]["presc"]."</td>
 
+              </tr>";
 
+            }
         ?>
         </tbody>
         </table>
