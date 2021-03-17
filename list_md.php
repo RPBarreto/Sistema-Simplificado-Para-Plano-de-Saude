@@ -21,25 +21,35 @@
         </thead>
         <tbody>
         <?php
-            $xml = simplexml_load_file("medicos.xml");
+            $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
+
+            $sql = "SELECT * FROM medicos";
+                    
+            $res = $conn->query($sql);
+        
+            if ($res->rowCount() > 0) {
+              $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+                
+            }
+        
             $_SESSION["unique1"] = 0;
             $_SESSION["unique2"] = 0;
 
-
-            for ($i = 0; $i < sizeof($xml); $i++) {
+            for ($i = 0; $i < sizeof($rows); $i++) {
               echo "<tr>
                       <th scope='row'>".($i + 1)."</th>
-                      <td>".$xml->medico[$i]->Name."</td>
-                      <td>".$xml->medico[$i]->LastName."</td>
-                      <td>".$xml->medico[$i]->Email."</td>
-                      <td>".$xml->medico[$i]->Address."</td>
-                      <td>".$xml->medico[$i]->Phone."</td>
-                      <td>".$xml->medico[$i]->Expertise."</td>
-                      <td>".$xml->medico[$i]->CRM."</td>
+                      <td>".$rows[$i]["name"]."</td>
+                      <td>".$rows[$i]["lastname"]."</td>
+                      <td>".$rows[$i]["email"]."</td>
+                      <td>".$rows[$i]["address"]."</td>
+                      <td>".$rows[$i]["phone"]."</td>
+                      <td>".$rows[$i]["expertise"]."</td>
+                      <td>".$rows[$i]["crm"]."</td>
+
                       <td>
                         <form action='edit_md.php' method='GET'>
-                          <input class='form-control' name='crm' type='hidden' value='".$xml->medico[$i]->CRM."' />
-                          <input class='form-control' name='email' type='hidden' value='".$xml->medico[$i]->Email."' />
+                          <input class='form-control' name='crm' type='hidden' value='".$rows[$i]["crm"]."' />
+                          <input class='form-control' name='email' type='hidden' value='".$rows[$i]["email"]."' />
                           <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
                         </form>
                       
@@ -48,7 +58,7 @@
                     </tr>";
 
             }
-
+            
 
 
         ?>
