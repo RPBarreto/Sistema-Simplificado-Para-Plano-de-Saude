@@ -60,7 +60,6 @@
     }
 
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $exists = false;
 
     $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root") or die('Unable to Connect');
   
