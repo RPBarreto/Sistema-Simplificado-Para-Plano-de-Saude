@@ -100,7 +100,7 @@
   
     if (!$exists) {
       $sql = "INSERT INTO `laboratorios`(`name`, `cnpj`, `email`, `address`, `phone`, `expertise`)
-              VALUES ('$firstname','$cnpj','$email','$address','$phone','$expertise')";
+              VALUES ('$name','$cnpj','$email','$address','$phone','$expertise')";
       $res = $conn->query($sql);
 
       $sql = "INSERT INTO `users`(`email`, `pass`, `type`)
