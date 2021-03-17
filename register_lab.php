@@ -74,61 +74,40 @@
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $exists = false;
 
-    libxml_use_internal_errors(true);
-
-    $xml = simplexml_load_file("laboratorios.xml");
-
-    if ($xml === false) {
-        echo ("Falha ao carregar o código XML: ");
-        
-        foreach(libxml_get_errors() as $error) {
-            echo ("<br>". $error->message);
-
-        }
-    
-    } else {
-        for ($i = 0; $i < sizeof($xml); $i++) {
-          console_log($xml->laboratorio[$i]->email);
-
-          if ($_POST["cnpj"] == $xml->laboratorio[$i]->CNPJ || $_POST["email"] == $xml->laboratorio[$i]->Email) {
-            echo "<script type='text/javascript'>
-            $(document).ready(function(){
-              $('#Modal').modal('show');
-            });
-            </script>";
-            $exists = true;
-            break;
-
-          }
-
-        }
-
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root") or die('Unable to Connect');
+  
+    $cnpj = $_POST["cnpj"];
+    $email = $_POST["email"];
+    $name = $_POST["firstname"];
+    $address = $_POST["address"];
+    $phone = $_POST["phone"];
+    $expertise = $_POST["expertise"];
+    $sql = "SELECT cnpj, email FROM medicos WHERE cnpj = '$cnpj' OR email = '$email'";
+    $res = $conn->query($sql);
+    $row = $res->fetchAll(PDO::FETCH_ASSOC);
+    console_log($row);
+    if ($row) {
+      echo "<script type='text/javascript'>
+      $(document).ready(function(){
+        $('#Modal').modal('show');
+      });
+      </script>";
+      $exists = true;
     }
-
+  
+        
+  
+    
+  
     if (!$exists) {
-      $xml = simplexml_load_file("laboratorios.xml");
-      $node = $xml->addChild("laboratorio");
+      $sql = "INSERT INTO `laboratorios`(`name`, `cnpj`, `email`, `address`, `phone`, `expertise`)
+              VALUES ('$firstname','$cnpj','$email','$address','$phone','$expertise')";
+      $res = $conn->query($sql);
 
-      $node->addChild("Name", $_POST["firstName"]);
-      $node->addChild("CNPJ", $_POST["cnpj"]);
-      $node->addChild("Email", $_POST["email"]);
-      $node->addChild("Address", $_POST["address"]);
-      $node->addChild("Phone", $_POST["phone"]);
-      $node->addChild("Expertise", $_POST["expertise"]);
-
-      //Senha
-     
-
-      $s = simplexml_import_dom($xml);
-      $s->saveXML("laboratorios.xml");
-
-      $xml = simplexml_load_file("users.xml");
-      $node = $xml->addChild("user");
-      $node->addChild("Email", $_POST["email"]);
-      $node->addChild("Pass", $_POST["cnpj"]);
-      $node->addChild("Type", '3');
-      $s = simplexml_import_dom($xml);
-      $s->saveXML("users.xml");
+      $sql = "INSERT INTO `users`(`email`, `pass`, `type`)
+              VALUES ('$email','$cnpj','3')";
+      $res = $conn->query($sql);
+  
     }
 
   }
