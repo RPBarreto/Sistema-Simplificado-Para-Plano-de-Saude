@@ -3,12 +3,11 @@
 <?php
 $getemail = $_SESSION["user"];
 
-libxml_use_internal_errors(true);
 
-$xml = simplexml_load_file("laboratorios.xml");
+$conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-if ($xml === false) {
-    echo ("Falha ao carregar o código XML: ");
+if (!$conn) {
+    echo ("Falha ao conectar ao banco: ");
     
     foreach(libxml_get_errors() as $error) {
         echo ("<br>". $error->message);
@@ -30,26 +29,24 @@ if ($xml === false) {
     $getcnpj = $_POST["getcnpj"];
 
   }
-  
 
 } else {
-    for ($i = 0; $i < sizeof($xml); $i++) {
-      
-      if ($getemail == $xml->laboratorio[$i]->Email) {
-        $name = $xml->laboratorio[$i]->Name;
-        $email = $xml->laboratorio[$i]->Email;
-        $address = $xml->laboratorio[$i]->Address;
-        $phone = $xml->laboratorio[$i]->Phone;
-        $expertise = $xml->laboratorio[$i]->Expertise;
-        $cnpj = $xml->laboratorio[$i]->CNPJ;
+  $sql = "SELECT * FROM laboratorios WHERE email = '$getemail'";
+  $res = $conn->query($sql);
+  $rows = $res->fetchAll(PDO::FETCH_ASSOC);
 
-        $getcnpj = $cnpj;
+  $name = $rows[0]["name"];
+  $cnpj = $rows[0]["cnpj"];
+  $email = $rows[0]["email"];
+  $address = $rows[0]["address"];
+  $phone = $rows[0]["phone"];
+  $expertise = $rows[0]["expertise"];
 
-      }
-
-    }
+  $getcnpj = $cnpj;
+  
 
 }
+
 
 ?>
 
