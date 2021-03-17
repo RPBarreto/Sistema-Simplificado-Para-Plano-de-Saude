@@ -55,35 +55,18 @@
     <?php
 
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = 1;
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root") or die('Unable to Connect');
+  
+   
+    $email = $_SESSION["user"];
+    $pac = $_POST["pac"];
+    $data = $_POST["data"];
+    $type =$_POST["type"];
+    $result = $_POST["result"];
+    $sql = "INSERT INTO `exames`(`laboratorio`, `paciente`, `data`, `type`, `result`)
+            VALUES ('$email','$pac','$data','$type','$result')";
+    $res = $conn->query($sql);
 
-    $xml = simplexml_load_file("exames.xml");
-
-    for ($i = 0; $i < sizeof($xml); $i++) {
-        if ($xml->laboratorio[$i]->Email == $_SESSION["user"]) {
-            for ($j = 0; $j < sizeof($xml->laboratorio[$i]->Email); $j++) {
-                $id += 1;
-
-            }
-
-        }
-
-    }
-
-    $node = $xml->addChild("laboratorio");
-    $node->addChild("Email", $_SESSION["user"]);
-    $node2 = $node->addChild("exame");
-    $node2->addChild("ID", $id);
-    $node2->addChild("Pac", $_POST["pac"]);
-    $node2->addChild("Data", $_POST["data"]);
-    $node2->addChild("Type", $_POST["type"]);
-    $node2->addChild("Result", $_POST["result"]);
-    
-    if (!empty($_POST["pac"])) {
-        $s = simplexml_import_dom($xml);
-        $s->saveXML("exames.xml");
-    
-    }
 
   }
   ?>      

@@ -78,14 +78,13 @@
   
     $cnpj = $_POST["cnpj"];
     $email = $_POST["email"];
-    $name = $_POST["firstname"];
+    $name = $_POST["firstName"];
     $address = $_POST["address"];
     $phone = $_POST["phone"];
     $expertise = $_POST["expertise"];
-    $sql = "SELECT cnpj, email FROM medicos WHERE cnpj = '$cnpj' OR email = '$email'";
+    $sql = "SELECT cnpj, email FROM laboratorios WHERE cnpj = '$cnpj' OR email = '$email'";
     $res = $conn->query($sql);
     $row = $res->fetchAll(PDO::FETCH_ASSOC);
-    console_log($row);
     if ($row) {
       echo "<script type='text/javascript'>
       $(document).ready(function(){

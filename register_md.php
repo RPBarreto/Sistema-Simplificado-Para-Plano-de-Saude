@@ -120,7 +120,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $sql = "SELECT crm, email FROM medicos WHERE crm = '$crm' OR email = '$email'";
   $res = $conn->query($sql);
   $row = $res->fetchAll(PDO::FETCH_ASSOC);
-  console_log($row);
   if ($row) {
     echo "<script type='text/javascript'>
     $(document).ready(function(){
