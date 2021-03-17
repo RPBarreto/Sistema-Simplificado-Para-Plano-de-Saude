@@ -3,12 +3,11 @@
 <?php
 $getemail = $_SESSION["user"];
 
-libxml_use_internal_errors(true);
 
-$xml = simplexml_load_file("medicos.xml");
+$conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-if ($xml === false) {
-    echo ("Falha ao carregar o código XML: ");
+if (!$conn) {
+    echo ("Falha ao conectar ao banco: ");
     
     foreach(libxml_get_errors() as $error) {
         echo ("<br>". $error->message);
@@ -33,22 +32,20 @@ if ($xml === false) {
   }
 
 } else {
-    for ($i = 0; $i < sizeof($xml); $i++) {
-      
-      if ($getemail == $xml->medico[$i]->Email) {
-        $name = $xml->medico[$i]->Name;
-        $last_name = $xml->medico[$i]->LastName;
-        $email = $xml->medico[$i]->Email;
-        $address = $xml->medico[$i]->Address;
-        $phone = $xml->medico[$i]->Phone;
-        $expertise = $xml->medico[$i]->Expertise;
-        $crm = $xml->medico[$i]->CRM;
+  $sql = "SELECT * FROM medicos WHERE email = '$getemail'";
+  $res = $conn->query($sql);
+  $rows = $res->fetchAll(PDO::FETCH_ASSOC);
 
-        $getcrm = $crm;
+  $name = $rows[0]["name"];
+  $last_name = $rows[0]["lastname"];
+  $email = $rows[0]["email"];
+  $address = $rows[0]["address"];
+  $phone = $rows[0]["phone"];
+  $expertise = $rows[0]["expertise"];
+  $crm = $rows[0]["crm"];
 
-      }
-
-    }
+  $getcrm = $crm;
+  
 
 }
 
