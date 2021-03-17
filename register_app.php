@@ -60,35 +60,20 @@
     }
 
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = 1;
+    $exists = false;
 
-    $xml = simplexml_load_file("consultas.xml");
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root") or die('Unable to Connect');
+  
+   
+    $email = $_SESSION["user"];
+    $pac = $_POST["pac"];
+    $data = $_POST["data"];
+    $presc = $_POST["presc"];
+    $notes = $_POST["notes"];
+    $sql = "INSERT INTO `consultas`(`medico`, `paciente`, `data`, `presc`, `notes`)
+            VALUES ('$email','$pac','$data','$presc','$notes')";
+    $res = $conn->query($sql);
 
-    for ($i = 0; $i < sizeof($xml); $i++) {
-        if ($xml->medico[$i]->Email == $_SESSION["user"]) {
-            for ($j = 0; $j < sizeof($xml->medico[$i]->Email); $j++) {
-                $id += 1;
-
-            }
-
-        }
-
-    }
-
-    $node = $xml->addChild("medico");
-    $node->addChild("Email", $_SESSION["user"]);
-    $node2 = $node->addChild("consulta");
-    $node2->addChild("ID", $id);
-    $node2->addChild("Pac", $_POST["pac"]);
-    $node2->addChild("Data", $_POST["data"]);
-    $node2->addChild("Presc", $_POST["presc"]);
-    $node2->addChild("Notes", $_POST["notes"]);
-    
-    if (!empty($_POST["pac"])) {
-        $s = simplexml_import_dom($xml);
-        $s->saveXML("consultas.xml");
-    
-    }
 
   }
   ?>      
