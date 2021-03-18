@@ -18,30 +18,40 @@
         </thead>
         <tbody>
         <?php
-            $xml = simplexml_load_file("exames.xml");
-
-            for ($i = 0; $i < sizeof($xml); $i++) {
-
-              if ($xml->laboratorio[$i]->Email == $_SESSION["user"]) {
-            
-                  echo "<tr>
-                  <th scope='row'>".($xml->laboratorio[$i]->exame->ID)."</th>
-                  <td>".$xml->laboratorio[$i]->exame->Pac."</td>
-                  <td>".$xml->laboratorio[$i]->exame->Data."</td>
-                  <td>".$xml->laboratorio[$i]->exame->Type."</td>
-                  <td>".$xml->laboratorio[$i]->exame->Result."</td>
-                  <td>
-                    <form action='edit_test.php' method='POST'>
-                      <input class='form-control' name='id' type='hidden' value='".$xml->laboratorio[$i]->exame->ID."' />
-                      <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
-                    </form>
-                  
-                  </td>
-                </tr>";
-
-              }
-
+            $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
+            $mail = $_SESSION["user"];
+            $sql = "SELECT * FROM exames WHERE laboratorio = '$mail'";
+                    
+            $res = $conn->query($sql);
+        
+            if ($res->rowCount() > 0) {
+              $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+                
             }
+        
+            $_SESSION["unique1"] = 0;
+            $_SESSION["unique2"] = 0;
+
+            for ($i = 0; $i < sizeof($rows); $i++) {
+              echo "<tr>
+                      <th scope='row'>".$rows[$i]["id"]."</th>
+                      <td>".$rows[$i]["paciente"]."</td>
+                      <td>".$rows[$i]["data"]."</td>
+                      <td>".$rows[$i]["type"]."</td>
+                      <td>".$rows[$i]["result"]."</td>
+
+                      <td>
+                        <form action='edit_teste.php' method='GET'>
+                          <input class='form-control' name='id' type='hidden' value='".$rows[$i]["id"]."' />
+                          <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
+                        </form>
+                      
+                      
+                      </td>
+                    </tr>";
+
+            }        
+
 
 
 
