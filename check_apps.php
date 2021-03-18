@@ -25,17 +25,18 @@
             if ($res->rowCount() > 0) {
                 $rows = $res->fetchAll(PDO::FETCH_ASSOC);
         
-            }
 
-            for ($i = 0; $i < sizeof($rows); $i++) {
-                echo "<tr>
-                <th scope='row'>".$rows[$i]["id"]."</th>
-                <td>".$rows[$i]["medico"]."</td>
-                <td>".$rows[$i]["data"]."</td>
-                <td>".$rows[$i]["presc"]."</td>
 
-              </tr>";
+                for ($i = 0; $i < sizeof($rows); $i++) {
+                    echo "<tr>
+                    <th scope='row'>".$rows[$i]["id"]."</th>
+                    <td>".$rows[$i]["medico"]."</td>
+                    <td>".$rows[$i]["data"]."</td>
+                    <td>".$rows[$i]["presc"]."</td>
 
+                </tr>";
+
+                }
             }
         ?>
         </tbody>

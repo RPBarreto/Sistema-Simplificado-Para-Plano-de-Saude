@@ -1,46 +1,38 @@
 <?php include "./header_lab.php" ?>
 
 <?php
-if (!empty($_POST["id"])) {
-  $getid = $_POST["id"];
+  if (!empty($_POST["id"])) {
+    $getid = $_POST["id"];
 
-} else {
-  $getid = $_POST["getid"];
-  
-}
-
-libxml_use_internal_errors(true);
-
-$xml = simplexml_load_file("exames.xml");
-
-if ($xml === false) {
-    echo ("Falha ao carregar o código XML: ");
+  } else {
+    $getid = $_POST["getid"];
     
-    foreach(libxml_get_errors() as $error) {
-        echo ("<br>". $error->message);
+  }
 
+  $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
+
+  } if (!empty($_POST["getid"])) {
+    $pac = $_POST["pac"];
+    $data = $_POST["data"];
+    $type = $_POST["type"];
+    $result = $_POST["result"];
+
+  } else {
+    $sql = "SELECT * FROM exames WHERE id = '".$getID."' AND laboratorio = '".$_SESSION['user']."';";
+
+    $res = $conn->query($sql);
+
+    if ($res->rowCount() > 0) {
+      $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+        
     }
+        
+    $pac = $rows[0]["paciente"];
+    $data = $rows[0]["data"];
+    $type = $rows[0]["type"];
+    $result = $rows[0]["result"];
 
-} else if (!empty($_POST["getid"])) {
-  $pac = $_POST["pac"];
-  $data = $_POST["data"];
-  $type = $_POST["type"];
-  $result = $_POST["result"];
-
-} else {
-    for ($i = 0; $i < sizeof($xml); $i++) {
-      
-      if ($xml->laboratorio[$i]->Email == $_SESSION["user"] && $xml->laboratorio[$i]->exame->ID == $getid) {
-        $pac = $xml->laboratorio[$i]->exame->Pac;
-        $data = $xml->laboratorio[$i]->exame->Data;
-        $type = $xml->laboratorio[$i]->exame->Type;
-        $result = $xml->laboratorio[$i]->exame->Result;
-
-      }
-
-    }
-
-}
+  }
 
 ?>
 
@@ -101,40 +93,21 @@ if ($xml === false) {
 <?php
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["pac"])) {
-  libxml_use_internal_errors(true);
-    
-  $xml = simplexml_load_file("exames.xml");
 
-  if ($xml === false) {
-    echo ("Falha ao carregar o código XML: ");
-      
-    foreach(libxml_get_errors() as $error) {
-        echo ("<br>". $error->message);
+  $sql = "UPDATE exames SET paciente = :paciente, data = :data, type = :type, result = :result WHERE id = '".$getID."' AND laboratorio = '".$_SESSION['user']."';";
+  $stmt = $conn->prepare($sql);
+  $stmt->bindParam(":paciente", $_POST["pac"]);
+  $stmt->bindParam(":data", $_POST["data"]);
+  $stmt->bindParam(":type", $_POST["type"]);
+  $stmt->bindParam(":result", $_POST["result"]);
 
-    }
 
-  } else {
-      for ($i = 0; $i < sizeof($xml); $i++) {
-          
-        if ($xml->laboratorio[$i]->Email == $_SESSION["user"] && $xml->laboratorio[$i]->exame->ID == $getid) {
-            $xml->laboratorio[$i]->exame->Pac = $_POST["pac"];
-            $xml->laboratorio[$i]->exame->Data = $_POST["data"];
-            $xml->laboratorio[$i]->exame->Type = $_POST["type"];
-            $xml->laboratorio[$i]->exame->Result = $_POST["result"];
+  $stmt->execute();
 
-        }
+  $conn->exec($sql);
 
-      }
-
-  }
-
-    //Precisa ser testado
-    //if (!empty($_POST["pac"])) {
-      $s = simplexml_import_dom($xml);
-      $s->saveXML("exames.xml");
-    
-    //}
-  }
+}
 ?>
-      </body>
+    </body>
 </html>
+

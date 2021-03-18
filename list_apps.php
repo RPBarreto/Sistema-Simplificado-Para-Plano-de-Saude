@@ -23,35 +23,33 @@
             $sql = "SELECT * FROM consultas WHERE medico = '$mail'";
                     
             $res = $conn->query($sql);
+
+            $_SESSION["unique1"] = 0;
+            $_SESSION["unique2"] = 0;
         
             if ($res->rowCount() > 0) {
               $rows = $res->fetchAll(PDO::FETCH_ASSOC);
-                
-            }
-        
-            $_SESSION["unique1"] = 0;
-            $_SESSION["unique2"] = 0;
+              
+              for ($i = 0; $i < sizeof($rows); $i++) {
+                echo "<tr>
+                        <th scope='row'>".$rows[$i]["id"]."</th>
+                        <td>".$rows[$i]["paciente"]."</td>
+                        <td>".$rows[$i]["data"]."</td>
+                        <td>".$rows[$i]["presc"]."</td>
+                        <td>".$rows[$i]["notes"]."</td>
 
-            for ($i = 0; $i < sizeof($rows); $i++) {
-              echo "<tr>
-                      <th scope='row'>".$rows[$i]["id"]."</th>
-                      <td>".$rows[$i]["paciente"]."</td>
-                      <td>".$rows[$i]["data"]."</td>
-                      <td>".$rows[$i]["presc"]."</td>
-                      <td>".$rows[$i]["notes"]."</td>
+                        <td>
+                          <form action='edit_app.php' method='GET'>
+                            <input class='form-control' name='id' type='hidden' value='".$rows[$i]["id"]."' />
+                            <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
+                          </form>
+                        
+                        
+                        </td>
+                      </tr>";
 
-                      <td>
-                        <form action='edit_app.php' method='GET'>
-                          <input class='form-control' name='id' type='hidden' value='".$rows[$i]["id"]."' />
-                          <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
-                        </form>
-                      
-                      
-                      </td>
-                    </tr>";
-
-            }
-
+              }
+          }
 
 
 

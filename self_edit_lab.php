@@ -1,51 +1,43 @@
 <?php include "./header_lab.php" ?>
 
 <?php
-$getemail = $_SESSION["user"];
+  $getemail = $_SESSION["user"];
 
 
-$conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
+  $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-if (!$conn) {
-    echo ("Falha ao conectar ao banco: ");
-    
-    foreach(libxml_get_errors() as $error) {
-        echo ("<br>". $error->message);
+  if (!empty($_POST["getemail"])) {
+    $name = $_POST["firstname"];
+    $email = $_POST["email"];
+    $address = $_POST["address"];
+    $phone = $_POST["phone"];
+    $expertise = $_POST["expertise"];
+    $cnpj = $_POST["cnpj"];
+
+    if ($_SESSION["unique"] != "") {
+      $getcnpj = $_SESSION["unique"];
+
+    } else {
+      $getcnpj = $_POST["getcnpj"];
 
     }
 
-} else if (!empty($_POST["getemail"])) {
-  $name = $_POST["firstname"];
-  $email = $_POST["email"];
-  $address = $_POST["address"];
-  $phone = $_POST["phone"];
-  $expertise = $_POST["expertise"];
-  $cnpj = $_POST["cnpj"];
-
-  if ($_SESSION["unique"] != "") {
-    $getcnpj = $_SESSION["unique"];
-
   } else {
-    $getcnpj = $_POST["getcnpj"];
+    $sql = "SELECT * FROM laboratorios WHERE email = '$getemail'";
+    $res = $conn->query($sql);
+    $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+
+    $name = $rows[0]["name"];
+    $cnpj = $rows[0]["cnpj"];
+    $email = $rows[0]["email"];
+    $address = $rows[0]["address"];
+    $phone = $rows[0]["phone"];
+    $expertise = $rows[0]["expertise"];
+
+    $getcnpj = $cnpj;
+    
 
   }
-
-} else {
-  $sql = "SELECT * FROM laboratorios WHERE email = '$getemail'";
-  $res = $conn->query($sql);
-  $rows = $res->fetchAll(PDO::FETCH_ASSOC);
-
-  $name = $rows[0]["name"];
-  $cnpj = $rows[0]["cnpj"];
-  $email = $rows[0]["email"];
-  $address = $rows[0]["address"];
-  $phone = $rows[0]["phone"];
-  $expertise = $rows[0]["expertise"];
-
-  $getcnpj = $cnpj;
-  
-
-}
 
 
 ?>
@@ -150,127 +142,95 @@ if (!$conn) {
     </div>        
 
 <?php
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $exists = false;
-  libxml_use_internal_errors(true);
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-  $xml = simplexml_load_file("laboratorios.xml");
+    $sql = "SELECT * FROM laboratorios WHERE (cnpj = '".$_POST["cnpj"]."' OR email = '".$_POST["email"]."') AND NOT (cnpj = '".$getcnpj."' OR email = '".$getemail."');";
 
-  if ($xml === false) {
-      echo ("Falha ao carregar o código XML: ");
+    $res = $conn->query($sql);
+
+    if ($res->rowCount() > 0) {
+      echo "<script type='text/javascript'>
+      $(document).ready(function(){
+        $('#Modal').modal('show');
+      });
+      </script>";
+
+    } else {
+      $_SESSION["unique"] = $_POST["cnpj"];
+
+      $sql = "UPDATE laboratorios SET name = :name, cnpj = :cnpj, email = :email, address = :address, phone = :phone, expertise = :expertise WHERE cnpj = '".$getcnpj."';";
+      $stmt = $conn->prepare($sql);
+      $stmt->bindParam(":name", $_POST["firstname"]);
+      $stmt->bindParam(":cnpj", $_POST["cnpj"]);
+      $stmt->bindParam(":address", $_POST["address"]);
+      $stmt->bindParam(":phone", $_POST["phone"]);
+      $stmt->bindParam(":expertise", $_POST["expertise"]);
+      $stmt->bindParam(":email", $_POST["email"]);
+
+      $stmt->execute();
+    
+      $conn->exec($sql);
+
+      if ($getemail != $_POST["email"]) {
+        $sql = "UPDATE laboratorios SET email = :email WHERE cnpj = '".$getcnpj."';";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(":email", $_POST["email"]);
+    
+        $stmt->execute();
       
-      foreach(libxml_get_errors() as $error) {
-          echo ("<br>". $error->message);
+        $conn->exec($sql);
 
-      }
-  
-  } else {
-      for ($i = 0; $i < sizeof($xml); $i++) {
+        $sql = "SELECT * FROM users WHERE email = '".$getemail."';";
 
-        if ($_POST["email"] == $xml->laboratorio[$i]->Email || $_POST["cnpj"] == $xml->laboratorio[$i]->CNPJ) {
-          if (!($getemail == $xml->laboratorio[$i]->Email) || !($getcnpj == $xml->laboratorio[$i]->CNPJ)) {
-            echo "<script type='text/javascript'>
-            $(document).ready(function(){
-              $('#Modal').modal('show');
-            });
-            </script>";
+        $res = $conn->query($sql);
 
-            $exists = true;
-            break;
-          
-          }
+        if ($res->rowCount() > 0) {
+          $sql = "UPDATE users SET email = :email, pass = :pass WHERE email = '".$getemail."';";
+          $stmt = $conn->prepare($sql);
+          $stmt->bindParam(":email", $_POST["email"]);
+          $stmt->bindParam(":pass", $_POST["pass"]);
+
+          $stmt->execute();
+
+          $conn->exec($sql);
+
+          session_unset();
+                  
+          session_destroy();
+
+        }
+
+      } else {
+        $sql = "SELECT * FROM users WHERE email = '".$getemail."';";
+
+        $res = $conn->query($sql);
+
+        if ($res->rowCount() > 0) {
+          $sql = "UPDATE users SET pass = :pass WHERE email = '".$getemail."';";
+          $stmt = $conn->prepare($sql);
+          $stmt->bindParam(":pass", $_POST["pass"]);
+
+          $stmt->execute();
+
+          $conn->exec($sql);
+
+        }
+
+        $getemail = $_POST["email"];
+
+        if (!empty($_SESSION["pass"]) && $_POST["pass"] != $_SESSION["pass"]) {
+          session_unset();
+            
+          session_destroy();
 
         }
 
       }
-
-  }
-
-  if (!$exists) {
-    $_SESSION["unique"] = $_POST["cnpj"];
-
     
-    $xml = simplexml_load_file("laboratorios.xml");
-
-    $xml2 = simplexml_load_file("users.xml");
-
-    if ($xml === false) {
-      echo ("Falha ao carregar o código XML: ");
-      
-      foreach(libxml_get_errors() as $error) {
-          echo ("<br>". $error->message);
-
-      }
-
-    } else {
-        for ($i = 0; $i < sizeof($xml); $i++) {
-          
-          if ($getemail == $xml->laboratorio[$i]->Email) {
-            $xml->laboratorio[$i]->Name = $_POST["firstname"];
-            $xml->laboratorio[$i]->CNPJ = $_POST["cnpj"];
-            $xml->laboratorio[$i]->Email = $_POST["email"];
-            $xml->laboratorio[$i]->Address = $_POST["address"];
-            $xml->laboratorio[$i]->Phone = $_POST["phone"];
-            $xml->laboratorio[$i]->Expertise = $_POST["expertise"];
-         
-            if ($getemail != $_POST["email"]) {
-              $xml->laboratorio[$i]->Email = $_POST["email"];
-
-                for ($j = 0; $j < sizeof($xml2); $j++) {
-
-                  if ($getemail == $xml2->user[$j]->Email) {
-                    $xml2->user[$j]->Email = $_POST["email"];
-                    $xml2->user[$j]->Pass = $_POST["pass"];
-
-                    session_unset();
-                
-                    session_destroy();
-                    
-                    break;
-
-                  }
-                  
-
-                }
-
-            } else {
-              for ($j = 0; $j < sizeof($xml2); $j++) {
-                if ($xml2->user[$j]->Email == $getemail) {
-                  $xml2->user[$j]->Pass = $_POST["pass"];
-                
-                }
-              
-              }
-            }
-
-            $getemail = $_POST["email"];
-
-            if (!empty($_SESSION["pass"]) && $_POST["pass"] != $_SESSION["pass"]) {
-              session_unset();
-                
-              session_destroy();
-
-            }
-
-          }
-
-      }
-
-  }
-
-    //Resolve o problema de campos em branco na edição
-    if (!empty($_POST["email"])) {
-      $s = simplexml_import_dom($xml);
-      $s->saveXML("laboratorios.xml");
-
-      $sv = simplexml_import_dom($xml2);
-      $sv->saveXML("users.xml");
     }
-    
   }
-
-}
 ?>
       </body>
 </html>

@@ -1,66 +1,58 @@
 <?php include "./header_admin.php" ?>
 
 <?php
-if (!empty($_GET["cpf"])) {
-  $getcpf = $_GET["cpf"];
+  if (!empty($_GET["cpf"])) {
+    $getcpf = $_GET["cpf"];
 
-} else if (!empty($_SESSION["unique1"])) {
-  $getcpf = $_SESSION["unique1"];
+  } else if (!empty($_SESSION["unique1"])) {
+    $getcpf = $_SESSION["unique1"];
 
-} else {
-  $getcpf = $_POST["getcpf"];
+  } else {
+    $getcpf = $_POST["getcpf"];
 
-}
+  }
 
-if (!empty($_GET["email"])) {
-  $getemail = $_GET["email"];
+  if (!empty($_GET["email"])) {
+    $getemail = $_GET["email"];
 
-} else if (!empty($_SESSION["unique2"])) {
-  $getemail = $_SESSION["unique2"];
+  } else if (!empty($_SESSION["unique2"])) {
+    $getemail = $_SESSION["unique2"];
 
-} else {
-  $getemail = $_POST["getemail"];
+  } else {
+    $getemail = $_POST["getemail"];
 
-}
+  }
 
-libxml_use_internal_errors(true);
+  $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-$xml = simplexml_load_file("pacientes.xml");
+  if (!empty($_POST["getcpf"])) {
+    $name = $_POST["firstname"];
+    $last_name = $_POST["lastname"];
+    $email = $_POST["email"];
+    $address = $_POST["address"];
+    $phone = $_POST["phone"];
+    $cpf = $_POST["cpf"];
+    $genero = $_POST["genero"];
 
-if ($xml === false) {
-    echo ("Falha ao carregar o código XML: ");
-    
-    foreach(libxml_get_errors() as $error) {
-        echo ("<br>". $error->message);
+  } else {
+    $sql = "SELECT * FROM pacientes WHERE cpf = '".$getcpf."';";
 
+    $res = $conn->query($sql);
+
+    if ($res->rowCount() > 0) {
+      $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+        
     }
+        
+    $name = $rows[0]["name"];
+    $last_name = $rows[0]["lastname"];
+    $email = $rows[0]["email"];
+    $address = $rows[0]["address"];
+    $phone = $rows[0]["phone"];
+    $cpf = $rows[0]["cpf"];
+    $genero = $rows[0]["genero"];
 
-} else if (!empty($_POST["getcpf"])) {
-  $name = $_POST["firstname"];
-  $last_name = $_POST["lastname"];
-  $email = $_POST["email"];
-  $address = $_POST["address"];
-  $phone = $_POST["phone"];
-  $cpf = $_POST["cpf"];
-  $genero = $_POST["genero"];
-
-} else {
-    for ($i = 0; $i < sizeof($xml); $i++) {
-      
-      if ($getcpf == $xml->paciente[$i]->CPF) {
-        $name = $xml->paciente[$i]->Name;
-        $last_name = $xml->paciente[$i]->LastName;
-        $email = $xml->paciente[$i]->Email;
-        $address = $xml->paciente[$i]->Address;
-        $phone = $xml->paciente[$i]->Phone;
-        $cpf = $xml->paciente[$i]->CPF;
-        $genero = $xml->paciente[$i]->Genero;
-
-      }
-
-    }
-
-}
+  }
 
 ?>
 
@@ -167,95 +159,70 @@ if ($xml === false) {
     </div>        
 
 <?php
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $exists = false;
-  libxml_use_internal_errors(true);
+    $sql = "SELECT * FROM pacientes WHERE (cpf = '".$_POST["cpf"]."' OR email = '".$_POST["email"]."') AND NOT (cpf = '".$getcpf."' OR email = '".$getemail."');";
 
-  $xml = simplexml_load_file("pacientes.xml");
+    $res = $conn->query($sql);
 
-  if ($xml === false) {
-      echo ("Falha ao carregar o código XML: ");
-      
-      foreach(libxml_get_errors() as $error) {
-          echo ("<br>". $error->message);
-
-      }
-  
-  } else {
-      for ($i = 0; $i < sizeof($xml); $i++) {
-
-        if ($_POST["cpf"] == $xml->paciente[$i]->CPF || $_POST["email"] == $xml->paciente[$i]->Email) {
-          if (!($getcpf == $xml->paciente[$i]->CPF) || !($getemail == $xml->paciente[$i]->Email)) {
-            echo "<script type='text/javascript'>
-            $(document).ready(function(){
-              $('#Modal').modal('show');
-            });
-            </script>";
-
-            $exists = true;
-            break;
-          
-          }
-
-        }
-
-      }
-
-  }
-
-  if (!$exists) {
-    $_SESSION["unique1"] = $_POST["cpf"];
-    $_SESSION["unique2"] = $_POST["email"];
-    
-    $xml = simplexml_load_file("pacientes.xml");
-    $xml2 = simplexml_load_file("users.xml");
-
-
-    if ($xml === false) {
-      echo ("Falha ao carregar o código XML: ");
-      
-      foreach(libxml_get_errors() as $error) {
-          echo ("<br>". $error->message);
-
-      }
+    if ($res->rowCount() > 0) {
+      echo "<script type='text/javascript'>
+      $(document).ready(function(){
+        $('#Modal').modal('show');
+      });
+      </script>";
 
     } else {
-        for ($i = 0; $i < sizeof($xml); $i++) {
-          
-          if ($getcpf == $xml->paciente[$i]->CPF) {
-            $xml->paciente[$i]->Name = $_POST["firstname"];
-            $xml->paciente[$i]->LastName = $_POST["lastname"];
-            $xml->paciente[$i]->Email = $_POST["email"];
-            $xml->paciente[$i]->Address = $_POST["address"];
-            $xml->paciente[$i]->Phone = $_POST["phone"];
-            $xml->paciente[$i]->Genero = $_POST["genero"];
+      $_SESSION["unique1"] = $_POST["cpf"];
+      $_SESSION["unique2"] = $_POST["email"];
 
-            $xml->paciente[$i]->CPF = $_POST["cpf"];
-            
-            for ($j = 0; $j < sizeof($xml2); $j++) {
-              if ($xml2->user[$j]->Email == $getemail) {
-                $xml2->user[$j]->Email = $_POST["email"];
+      $sql = "UPDATE pacientes SET name = :name, lastname = :lastname, cpf = :cpf, email = :email, address = :address, phone = :phone, genero = :genero WHERE cpf = '".$getcpf."';";
+      $stmt = $conn->prepare($sql);
+      $stmt->bindParam(":name", $_POST["firstname"]);
+      $stmt->bindParam(":lastname", $_POST["lastname"]);
+      $stmt->bindParam(":cpf", $_POST["cpf"]);
+      $stmt->bindParam(":email", $_POST["email"]);
+      $stmt->bindParam(":address", $_POST["address"]);
+      $stmt->bindParam(":phone", $_POST["phone"]);
+      $stmt->bindParam(":genero", $_POST["genero"]);
 
-              }
-            }
+      $stmt->execute();
 
-          }
+      $conn->exec($sql);
 
-        }
+      $sql = "UPDATE users SET email = :email, pass = :pass WHERE email = '".$getemail."';";
+      $stmt = $conn->prepare($sql);
 
+      $stmt->bindParam(":email", $_POST["email"]);
+      $stmt->bindParam(":pass", $_POST["cpf"]);
+
+      $stmt->execute();
+
+      $conn->exec($sql);
     }
 
-    $s = simplexml_import_dom($xml);
-    $sv = simplexml_import_dom($xml2);
-
-    $s->saveXML("pacientes.xml");
-    $sv->saveXML("users.xml");
-
-    
   }
+  ?>
 
-}
-?>
-      </body>
+  <div class="modal" tabindex="-1" role="dialog" id="Modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Erro</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Este e-mail ou CPF já foi cadastrado</p>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </body>
 </html>

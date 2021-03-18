@@ -1,64 +1,56 @@
 <?php include "./header_admin.php" ?>
 
 <?php
-if (!empty($_GET["cnpj"])) {
-  $getcnpj = $_GET["cnpj"];
+  if (!empty($_GET["cnpj"])) {
+    $getcnpj = $_GET["cnpj"];
 
-} else if (!empty($_SESSION["unique1"])) {
-  $getcnpj = $_SESSION["unique1"];
+  } else if (!empty($_SESSION["unique1"])) {
+    $getcnpj = $_SESSION["unique1"];
 
-} else {
-  $getcnpj = $_POST["getcnpj"];
+  } else {
+    $getcnpj = $_POST["getcnpj"];
 
-}
+  }
 
-if (!empty($_GET["email"])) {
-  $getemail = $_GET["email"];
+  if (!empty($_GET["email"])) {
+    $getemail = $_GET["email"];
 
-} else if (!empty($_SESSION["unique2"])) {
-  $getemail = $_SESSION["unique2"];
+  } else if (!empty($_SESSION["unique2"])) {
+    $getemail = $_SESSION["unique2"];
 
-} else {
-  $getemail = $_POST["getemail"];
+  } else {
+    $getemail = $_POST["getemail"];
 
-}
+  }
 
-libxml_use_internal_errors(true);
+  $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-$xml = simplexml_load_file("laboratorios.xml");
+  if (!empty($_POST["getcnpj"])) {
+    $name = $_POST["firstname"];
+    $cnpj = $_POST["cnpj"];
+    $email = $_POST["email"];
+    $address = $_POST["address"];
+    $phone = $_POST["phone"];
+    $expertise = $_POST["expertise"];
 
-if ($xml === false) {
-    echo ("Falha ao carregar o código XML: ");
-    
-    foreach(libxml_get_errors() as $error) {
-        echo ("<br>". $error->message);
+  } else {
+    $sql = "SELECT * FROM laboratorios WHERE cnpj = '".$getcnpj."';";
 
+    $res = $conn->query($sql);
+
+    if ($res->rowCount() > 0) {
+      $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+        
     }
+        
+    $name = $rows[0]["name"];
+    $email = $rows[0]["email"];
+    $address = $rows[0]["address"];
+    $phone = $rows[0]["phone"];
+    $cnpj = $rows[0]["cnpj"];
+    $expertise = $rows[0]["expertise"];
 
-} else if (!empty($_POST["getcnpj"])) {
-  $name = $_POST["firstname"];
-  $cnpj = $_POST["cnpj"];
-  $email = $_POST["email"];
-  $address = $_POST["address"];
-  $phone = $_POST["phone"];
-  $expertise = $_POST["expertise"];
-
-} else {
-    for ($i = 0; $i < sizeof($xml); $i++) {
-      
-      if ($getcnpj == $xml->laboratorio[$i]->CNPJ) {
-        $name = $xml->laboratorio[$i]->Name;
-        $cnpj = $xml->laboratorio[$i]->CNPJ;
-        $email = $xml->laboratorio[$i]->Email;
-        $address = $xml->laboratorio[$i]->Address;
-        $phone = $xml->laboratorio[$i]->Phone;
-        $expertise = $xml->laboratorio[$i]->Expertise;
-
-      }
-
-    }
-
-}
+  }
 
 ?>
 
@@ -153,92 +145,70 @@ if ($xml === false) {
       </div>
     </div>        
 
-<?php
+    <?php
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $exists = false;
-  libxml_use_internal_errors(true);
+    $sql = "SELECT * FROM laboratorios WHERE (cnpj = '".$_POST["cnpj"]."' OR email = '".$_POST["email"]."') AND NOT (cnpj = '".$getcnpj."' OR email = '".$getemail."');";
 
-  $xml = simplexml_load_file("laboratorios.xml");
+    $res = $conn->query($sql);
 
-  if ($xml === false) {
-      echo ("Falha ao carregar o código XML: ");
-      
-      foreach(libxml_get_errors() as $error) {
-          echo ("<br>". $error->message);
-
-      }
-  
-  } else {
-      for ($i = 0; $i < sizeof($xml); $i++) {
-
-        if ($_POST["cnpj"] == $xml->laboratorio[$i]->CNPJ || $_POST["email"] == $xml->laboratorio[$i]->Email) {
-          if (!($getcnpj == $xml->laboratorio[$i]->CNPJ) || !($getemail == $xml->laboratorio[$i]->Email)) {
-            echo "<script type='text/javascript'>
-            $(document).ready(function(){
-              $('#Modal').modal('show');
-            });
-            </script>";
-
-            $exists = true;
-            break;
-          
-          }
-
-        }
-
-      }
-
-  }
-
-  if (!$exists) {
-    $_SESSION["unique1"] = $_POST["cnpj"];
-    $_SESSION["unique2"] = $_POST["email"];
-    
-    $xml = simplexml_load_file("laboratorios.xml");
-    $xml2 = simplexml_load_file("users.xml");
-
-    if ($xml === false) {
-      echo ("Falha ao carregar o código XML: ");
-      
-      foreach(libxml_get_errors() as $error) {
-          echo ("<br>". $error->message);
-
-      }
+    if ($res->rowCount() > 0) {
+      echo "<script type='text/javascript'>
+      $(document).ready(function(){
+        $('#Modal').modal('show');
+      });
+      </script>";
 
     } else {
-        for ($i = 0; $i < sizeof($xml); $i++) {
-          
-          if ($getcnpj == $xml->laboratorio[$i]->CNPJ) {
-            $xml->laboratorio[$i]->Name = $_POST["firstname"];
-            $xml->laboratorio[$i]->Email = $_POST["email"];
-            $xml->laboratorio[$i]->Address = $_POST["address"];
-            $xml->laboratorio[$i]->Phone = $_POST["phone"];
-            $xml->laboratorio[$i]->Expertise = $_POST["expertise"];
-            
-            $xml->laboratorio[$i]->CNPJ = $_POST["cnpj"];
-            
-            for ($j = 0; $j < sizeof($xml2); $j++) {
-              if ($xml2->user[$j]->Email == $getemail) {
-                $xml2->user[$j]->Email = $_POST["email"];
+      $_SESSION["unique1"] = $_POST["cnpj"];
+      $_SESSION["unique2"] = $_POST["email"];
 
-              }
-            }
+      $sql = "UPDATE laboratorios SET name = :name, cnpj = :cnpj, email = :email, address = :address, phone = :phone, expertise = :expertise WHERE cnpj = '".$getcnpj."';";
+      $stmt = $conn->prepare($sql);
+      $stmt->bindParam(":name", $_POST["firstname"]);
+      $stmt->bindParam(":cnpj", $_POST["cnpj"]);
+      $stmt->bindParam(":email", $_POST["email"]);
+      $stmt->bindParam(":address", $_POST["address"]);
+      $stmt->bindParam(":phone", $_POST["phone"]);
+      $stmt->bindParam(":expertise", $_POST["expertise"]);
 
-          }
+      $stmt->execute();
 
-        }
+      $conn->exec($sql);
 
+      $sql = "UPDATE users SET email = :email, pass = :pass WHERE email = '".$getemail."';";
+      $stmt = $conn->prepare($sql);
+
+      $stmt->bindParam(":email", $_POST["email"]);
+      $stmt->bindParam(":pass", $_POST["cnpj"]);
+
+      $stmt->execute();
+
+      $conn->exec($sql);
     }
 
-    $s = simplexml_import_dom($xml);
-    $sv = simplexml_import_dom($xml2);
-    $s->saveXML("laboratorios.xml");
-    $sv->saveXML("users.xml");
-    
   }
+  ?>
 
-}
-?>
-      </body>
+  <div class="modal" tabindex="-1" role="dialog" id="Modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Erro</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Este e-mail ou CNPJ já foi cadastrado</p>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </body>
 </html>

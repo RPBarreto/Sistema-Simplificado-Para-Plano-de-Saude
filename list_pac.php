@@ -26,37 +26,36 @@
             $sql = "SELECT * FROM pacientes";
                     
             $res = $conn->query($sql);
+
+            $_SESSION["unique1"] = 0;
+            $_SESSION["unique2"] = 0;
         
             if ($res->rowCount() > 0) {
               $rows = $res->fetchAll(PDO::FETCH_ASSOC);
-                
-            }
-        
-            $_SESSION["unique1"] = 0;
-            $_SESSION["unique2"] = 0;
 
-            for ($i = 0; $i < sizeof($rows); $i++) {
-              echo "<tr>
-                      <th scope='row'>".($i + 1)."</th>
-                      <td>".$rows[$i]["name"]."</td>
-                      <td>".$rows[$i]["lastname"]."</td>
-                      <td>".$rows[$i]["email"]."</td>
-                      <td>".$rows[$i]["address"]."</td>
-                      <td>".$rows[$i]["phone"]."</td>
-                      <td>".$rows[$i]["cpf"]."</td>
-                      <td>".$rows[$i]["genero"]."</td>
+              for ($i = 0; $i < sizeof($rows); $i++) {
+                echo "<tr>
+                        <th scope='row'>".($i + 1)."</th>
+                        <td>".$rows[$i]["name"]."</td>
+                        <td>".$rows[$i]["lastname"]."</td>
+                        <td>".$rows[$i]["email"]."</td>
+                        <td>".$rows[$i]["address"]."</td>
+                        <td>".$rows[$i]["phone"]."</td>
+                        <td>".$rows[$i]["cpf"]."</td>
+                        <td>".$rows[$i]["genero"]."</td>
 
-                      <td>
-                        <form action='edit_pac.php' method='GET'>
-                          <input class='form-control' name='cpf' type='hidden' value='".$rows[$i]["cpf"]."' />
-                          <input class='form-control' name='email' type='hidden' value='".$rows[$i]["email"]."' />
-                          <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
-                        </form>
-                      
-                      
-                      </td>
-                    </tr>";
+                        <td>
+                          <form action='edit_pac.php' method='GET'>
+                            <input class='form-control' name='cpf' type='hidden' value='".$rows[$i]["cpf"]."' />
+                            <input class='form-control' name='email' type='hidden' value='".$rows[$i]["email"]."' />
+                            <button type='submit' class='btn btn-primary' name='submit'><b>Editar</b></button>  
+                          </form>
+                        
+                        
+                        </td>
+                      </tr>";
 
+              }
             }
 
 

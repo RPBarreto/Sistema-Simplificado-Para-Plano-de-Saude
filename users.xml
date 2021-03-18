@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<cadastro>
-<user>
-<Email>dad@g</Email>
-<Pass>123</Pass>
-<Type>1</Type>
-</user>
-<user><Email>tas@g</Email><Pass>12</Pass><Type>2</Type></user><user><Email>lab@g</Email><Pass>123</Pass><Type>3</Type></user><user><Email>pac@g</Email><Pass>123</Pass><Type>4</Type></user></cadastro>

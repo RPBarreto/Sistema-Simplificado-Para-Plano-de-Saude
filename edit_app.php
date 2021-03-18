@@ -1,46 +1,38 @@
 <?php include "./header_md.php" ?>
 
 <?php
-if (!empty($_POST["id"])) {
-  $getid = $_POST["id"];
+  if (!empty($_POST["id"])) {
+    $getid = $_POST["id"];
 
-} else {
-  $getid = $_POST["getid"];
-  
-}
-
-libxml_use_internal_errors(true);
-
-$xml = simplexml_load_file("consultas.xml");
-
-if ($xml === false) {
-    echo ("Falha ao carregar o código XML: ");
+  } else {
+    $getid = $_POST["getid"];
     
-    foreach(libxml_get_errors() as $error) {
-        echo ("<br>". $error->message);
+  }
 
+  $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
+
+  } if (!empty($_POST["getid"])) {
+    $pac = $_POST["pac"];
+    $data = $_POST["data"];
+    $presc = $_POST["presc"];
+    $notes = $_POST["notes"];
+
+  } else {
+    $sql = "SELECT * FROM consultas WHERE id = '".$getID."' AND medico = '".$_SESSION['user']."';";
+
+    $res = $conn->query($sql);
+
+    if ($res->rowCount() > 0) {
+      $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+        
     }
+        
+    $pac = $rows[0]["paciente"];
+    $data = $rows[0]["data"];
+    $presc = $rows[0]["presc"];
+    $notes = $rows[0]["notes"];
 
-} else if (!empty($_POST["getid"])) {
-  $pac = $_POST["pac"];
-  $data = $_POST["data"];
-  $presc = $_POST["presc"];
-  $notes = $_POST["notes"];
-
-} else {
-    for ($i = 0; $i < sizeof($xml); $i++) {
-      
-      if ($xml->medico[$i]->Email == $_SESSION["user"] && $xml->medico[$i]->consulta->ID == $getid) {
-        $pac = $xml->medico[$i]->consulta->Pac;
-        $data = $xml->medico[$i]->consulta->Data;
-        $presc = $xml->medico[$i]->consulta->Presc;
-        $notes = $xml->medico[$i]->consulta->Notes;
-
-      }
-
-    }
-
-}
+  }
 
 ?>
 
@@ -100,40 +92,20 @@ if ($xml === false) {
 
 <?php
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["pac"])) {
-  libxml_use_internal_errors(true);
-    
-  $xml = simplexml_load_file("consultas.xml");
+  if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["pac"])) {
 
-  if ($xml === false) {
-    echo ("Falha ao carregar o código XML: ");
-      
-    foreach(libxml_get_errors() as $error) {
-        echo ("<br>". $error->message);
+    $sql = "UPDATE consultas SET paciente = :paciente, data = :data, presc = :presc, notes = :notes WHERE id = '".$getID."' AND medico = '".$_SESSION['user']."';";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(":paciente", $_POST["pac"]);
+    $stmt->bindParam(":data", $_POST["data"]);
+    $stmt->bindParam(":presc", $_POST["presc"]);
+    $stmt->bindParam(":notes", $_POST["notes"]);
 
-    }
 
-  } else {
-      for ($i = 0; $i < sizeof($xml); $i++) {
-          
-        if ($xml->medico[$i]->Email == $_SESSION["user"] && $xml->medico[$i]->consulta->ID == $getid) {
-            $xml->medico[$i]->consulta->Pac = $_POST["pac"];
-            $xml->medico[$i]->consulta->Data = $_POST["data"];
-            $xml->medico[$i]->consulta->Presc = $_POST["presc"];
-            $xml->medico[$i]->consulta->Notes = $_POST["notes"];
+    $stmt->execute();
 
-        }
+    $conn->exec($sql);
 
-      }
-
-  }
-
-    //Precisa ser testado
-    //if (!empty($_POST["pac"])) {
-      $s = simplexml_import_dom($xml);
-      $s->saveXML("consultas.xml");
-    
-    //}
   }
 ?>
       </body>

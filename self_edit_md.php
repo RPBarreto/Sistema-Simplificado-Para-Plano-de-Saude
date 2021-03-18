@@ -1,57 +1,49 @@
 <?php include "./header_md.php" ?>
 
 <?php
-$getemail = $_SESSION["user"];
+    $getemail = $_SESSION["user"];
 
 
-$conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-if (!$conn) {
-    echo ("Falha ao conectar ao banco: ");
+    if (!empty($_POST["getemail"])) {
+        $name = $_POST["firstname"];
+        $last_name = $_POST["lastname"];
+        $email = $_POST["email"];
+        $address = $_POST["address"];
+        $phone = $_POST["phone"];
+        $expertise = $_POST["expertise"];
+        $crm = $_POST["crm"];
+
+        if ($_SESSION["unique"] != "") {
+            $getcrm = $_SESSION["unique"];
+
+        } else {
+            $getcrm = $_POST["getcrm"];
+
+        }
+
+    } else {
+        $sql = "SELECT * FROM medicos WHERE email = '$getemail'";
+        $res = $conn->query($sql);
+        $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+
+        $name = $rows[0]["name"];
+        $last_name = $rows[0]["lastname"];
+        $email = $rows[0]["email"];
+        $address = $rows[0]["address"];
+        $phone = $rows[0]["phone"];
+        $expertise = $rows[0]["expertise"];
+        $crm = $rows[0]["crm"];
+
+        $getcrm = $crm;
     
-    foreach(libxml_get_errors() as $error) {
-        echo ("<br>". $error->message);
 
     }
 
-} else if (!empty($_POST["getemail"])) {
-  $name = $_POST["firstname"];
-  $last_name = $_POST["lastname"];
-  $email = $_POST["email"];
-  $address = $_POST["address"];
-  $phone = $_POST["phone"];
-  $expertise = $_POST["expertise"];
-  $crm = $_POST["crm"];
-
-  if ($_SESSION["unique"] != "") {
-    $getcrm = $_SESSION["unique"];
-
-  } else {
-    $getcrm = $_POST["getcrm"];
-
-  }
-
-} else {
-  $sql = "SELECT * FROM medicos WHERE email = '$getemail'";
-  $res = $conn->query($sql);
-  $rows = $res->fetchAll(PDO::FETCH_ASSOC);
-
-  $name = $rows[0]["name"];
-  $last_name = $rows[0]["lastname"];
-  $email = $rows[0]["email"];
-  $address = $rows[0]["address"];
-  $phone = $rows[0]["phone"];
-  $expertise = $rows[0]["expertise"];
-  $crm = $rows[0]["crm"];
-
-  $getcrm = $crm;
-  
-
-}
-
 ?>
 
-    <div class="container">
+<div class="container">
   <div class="py-5 text-center">
     <img class="d-block mx-auto mb-4" src="assets/brand/logo.svg" alt="" width="72" height="72">
     <h2>Editar médico</h2>
@@ -157,128 +149,97 @@ if (!$conn) {
       </div>
     </div>        
 
-<?php
+<?php     
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $exists = false;
-  libxml_use_internal_errors(true);
+    $conn = new PDO("mysql:host=localhost;dbname=medicos", "root", "root");
 
-  $xml = simplexml_load_file("medicos.xml");
+    $sql = "SELECT * FROM medicos WHERE (crm = '".$_POST["crm"]."' OR email = '".$_POST["email"]."') AND NOT (crm = '".$getcrm."' OR email = '".$getemail."');";
 
-  if ($xml === false) {
-      echo ("Falha ao carregar o código XML: ");
+    $res = $conn->query($sql);
+
+    if ($res->rowCount() > 0) {
+      echo "<script type='text/javascript'>
+      $(document).ready(function(){
+        $('#Modal').modal('show');
+      });
+      </script>";
+
+    } else {
+      $_SESSION["unique"] = $_POST["crm"];
+
+      $sql = "UPDATE medicos SET name = :name, lastname = :lastname, crm = :crm, email = :email, address = :address, phone = :phone, expertise = :expertise WHERE crm = '".$getcrm."';";
+      $stmt = $conn->prepare($sql);
+      $stmt->bindParam(":name", $_POST["firstname"]);
+      $stmt->bindParam(":lastname", $_POST["lastname"]);
+      $stmt->bindParam(":crm", $_POST["crm"]);
+      $stmt->bindParam(":address", $_POST["address"]);
+      $stmt->bindParam(":phone", $_POST["phone"]);
+      $stmt->bindParam(":expertise", $_POST["expertise"]);
+      $stmt->bindParam(":email", $_POST["email"]);
+
+      $stmt->execute();
+    
+      $conn->exec($sql);
+
+      if ($getemail != $_POST["email"]) {
+        $sql = "UPDATE medicos SET email = :email WHERE crm = '".$getcrm."';";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(":email", $_POST["email"]);
+    
+        $stmt->execute();
       
-      foreach(libxml_get_errors() as $error) {
-          echo ("<br>". $error->message);
+        $conn->exec($sql);
 
-      }
-  
-  } else {
-      for ($i = 0; $i < sizeof($xml); $i++) {
+        $sql = "SELECT * FROM users WHERE email = '".$getemail."';";
 
-        if ($_POST["email"] == $xml->medico[$i]->Email || $_POST["crm"] == $xml->medico[$i]->CRM) {
-          if (!($getemail == $xml->medico[$i]->Email) || !($getcrm == $xml->medico[$i]->CRM)) {
-            echo "<script type='text/javascript'>
-            $(document).ready(function(){
-              $('#Modal').modal('show');
-            });
-            </script>";
+        $res = $conn->query($sql);
 
-            $exists = true;
-            break;
-          
-          }
+        if ($res->rowCount() > 0) {
+          $sql = "UPDATE users SET email = :email, pass = :pass WHERE email = '".$getemail."';";
+          $stmt = $conn->prepare($sql);
+          $stmt->bindParam(":email", $_POST["email"]);
+          $stmt->bindParam(":pass", $_POST["pass"]);
+
+          $stmt->execute();
+
+          $conn->exec($sql);
+
+          session_unset();
+                  
+          session_destroy();
+
+        }
+
+      } else {
+        $sql = "SELECT * FROM users WHERE email = '".$getemail."';";
+
+        $res = $conn->query($sql);
+
+        if ($res->rowCount() > 0) {
+          $sql = "UPDATE users SET pass = :pass WHERE email = '".$getemail."';";
+          $stmt = $conn->prepare($sql);
+          $stmt->bindParam(":pass", $_POST["pass"]);
+
+          $stmt->execute();
+
+          $conn->exec($sql);
+
+        }
+
+        $getemail = $_POST["email"];
+
+        if (!empty($_SESSION["pass"]) && $_POST["pass"] != $_SESSION["pass"]) {
+          session_unset();
+            
+          session_destroy();
 
         }
 
       }
-
-  }
-
-  if (!$exists) {
-    $_SESSION["unique"] = $_POST["crm"];
-
-    $xml = simplexml_load_file("medicos.xml");
-
-    $xml2 = simplexml_load_file("users.xml");
-
-    if ($xml === false) {
-      echo ("Falha ao carregar o código XML: ");
-      
-      foreach(libxml_get_errors() as $error) {
-          echo ("<br>". $error->message);
-
-      }
-
-    } else {
-        for ($i = 0; $i < sizeof($xml); $i++) {
-          
-          if ($getemail == $xml->medico[$i]->Email) {
-            $xml->medico[$i]->Name = $_POST["firstname"];
-            $xml->medico[$i]->LastName = $_POST["lastname"];
-            $xml->medico[$i]->Email = $_POST["email"];
-            $xml->medico[$i]->Address = $_POST["address"];
-            $xml->medico[$i]->Phone = $_POST["phone"];
-            $xml->medico[$i]->Expertise = $_POST["expertise"];
-            $xml->medico[$i]->CRM = $_POST["crm"];
-         
-            if ($getemail != $_POST["email"]) {
-              $xml->medico[$i]->Email = $_POST["email"];
-
-                for ($j = 0; $j < sizeof($xml2); $j++) {
-
-                  if ($getemail == $xml2->user[$j]->Email) {
-                    $xml2->user[$j]->Email = $_POST["email"];
-                    $xml2->user[$j]->Pass = $_POST["pass"];
-
-                    session_unset();
-                
-                    session_destroy();
-                    
-                    break;
-
-                  }
-                  
-
-                }
-
-            } else {
-              for ($j = 0; $j < sizeof($xml2); $j++) {
-                if ($xml2->user[$j]->Email == $getemail) {
-                  $xml2->user[$j]->Pass = $_POST["pass"];
-                
-                }
-              
-              }
-            }
-
-            $getemail = $_POST["email"];
-
-            if (!empty($_SESSION["pass"]) && $_POST["pass"] != $_SESSION["pass"]) {
-              session_unset();
-                
-              session_destroy();
-
-            }
-
-          }
-
-      }
-
-  }
-
-    //Resolve o problema de campos em branco na edição
-    if (!empty($_POST["email"])) {
-      $s = simplexml_import_dom($xml);
-      $s->saveXML("medicos.xml");
-
-      $sv = simplexml_import_dom($xml2);
-      $sv->saveXML("users.xml");
-    }
     
+    }
   }
-
-}
 ?>
       </body>
 </html>
