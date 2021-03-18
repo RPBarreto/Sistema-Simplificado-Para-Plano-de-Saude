@@ -114,6 +114,9 @@
             <a class="nav-link" href="list_pac.php#" id="nav-link">Listar pacientes</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="contadores.php#" id="nav-link">Contadores</a>
+          </li>
+          <li class="nav-item">
             <form id="logoutForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
               <input type="hidden" name="logout" value="error"/>
               <a class="nav-link" href="#" id="nav-link" onclick="this.closest('form').submit(); return false;"><b>Logout</b></a>
