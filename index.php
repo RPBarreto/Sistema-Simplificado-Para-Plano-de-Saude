@@ -74,7 +74,7 @@
       </div>
 
       <input class="btn btn-lg btn-primary btn-block" type="submit" value="Entrar" role="button" />
-      <p class="mt-5 mb-3 text-muted text-center">&copy; 2020-2020</p>
+      <p class="mt-5 mb-3 text-muted text-center">&copy; 2020-2021</p>
     </form>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
       <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="assets/dist/js/bootstrap.bundle.min.js"></script>
