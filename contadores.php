@@ -20,7 +20,14 @@
   </div>
               
   <div class="py-3 text-center">
-    <h2>Dados para <?php $data_formatada = strtotime($_POST["data"]); echo date('m/Y  ', $data_formatada  ); ?></h2>
+    <?php 
+      if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $data_formatada = strtotime($_POST["data"]);
+        echo "<h2>Dados para "; 
+        echo date('m/Y  ', $data_formatada  );
+        echo "</h2>";
+      }
+    ?>
   </div>
   <hr class="mb-4 ">
   <div class="py-4         text-center">
